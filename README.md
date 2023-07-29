@@ -57,5 +57,5 @@ python -m pip install -r requirements.txt
 
 ### 3. Deploying Privacy Sensitive Sensors
 
-![VAX Senor Rig Image](https://github.com/synergylabs/vax/blob/master/vax-hardware.png?raw=true)
+![VAX Sensor Rig Image](https://github.com/synergylabs/vax/blob/master/vax-hardware.png?raw=true)
 
