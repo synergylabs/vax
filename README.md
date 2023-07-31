@@ -91,9 +91,11 @@ To overcome this, we integrated [Respeaker Micarray v2.0](https://wiki.seeedstud
 - **Testing:**
 
 
-### 4. VAX Driver Interface for sensor integration and data collection
+### 4. VAX 'DriverInterface' for data collection
 
-### 5. Data Annotation Tool
+### 5. Data Annotation Tool (Streamlit)
+
+### 6. Building Desktop Application (Ubuntu 22.04)
 
 ## B. Training A/V ensemble with labelled instances
 
@@ -102,7 +104,6 @@ To overcome this, we integrated [Respeaker Micarray v2.0](https://wiki.seeedstud
 ### 2. Running off-the-shelf models on raw data
 
 ### 3. Building A/V ensemble using labeled instances
-
 
 ## C. Training and evaluating privacy-sensitive sensors
 
