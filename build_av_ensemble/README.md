@@ -2,11 +2,48 @@
 
 **About:** This tools helps in building an ensemble to map top prediction output from any off-the-shelf A/V model to . 
 
+## Section A. Workbench Setup
+
+### A.1: Environment Setup:
+
+### 1. Clone (or Fork!) this repository
+
+```
+git clone https://github.com/synergylabs/vax.git
+cd vax/build_av_ensemble
+```
+
+### 2. Create a virtual environment and install python packages
+
+We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
+
+```bash
+conda create -n "vax_av_ensemble" python=3.9
+conda activate vax_av_ensemble
+conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+
+python -m pip install -r requirements.txt
+```
+**Details coming soon...**
+
+## Section B. Module Configuration
+
+**Details coming soon...**
+
+## Section C. Running Scripts
+
+**Details coming soon...**
+
+## Section D. Understanding Module Output
+
+**Details coming soon...**
+
+
+
+## Reference
 For more details, contact [prasoonpatidar@cmu.edu](prasoonpatidar@cmu.edu).
 
-**Reference:**
-
-### If you find this tool useful in your research, please consider cite:
+### If you find this module useful in your research, please consider cite:
 
 ```bibtex
 @INPROCEEDINGS{patidar23vax,
