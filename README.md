@@ -32,12 +32,14 @@ per activity in each home (average accuracy of 79%) since VAX reduces the user b
 8x (∼2 labels vs. 17 labels).
 
 # Source Code Architecture
+
 The source code for VAX is broken into 4 independent modules.
 
 - **[M1. Data Collection and Annotation](data_collection_annotation/):** Collecting data across variety of sensing
   modalities with real-time ground truth
   annotation.
-- **[M2. Data Preprocessing and Visualization](data_processing_visualization/):** Preprocess collected data into activity
+- **[M2. Data Preprocessing and Visualization](data_processing_visualization/):** Preprocess collected data into
+  activity
   instances, combining input across
   all
   sensors, and create visualization of activity instance raw data.
@@ -49,11 +51,37 @@ The source code for VAX is broken into 4 independent modules.
   preprocessed raw data for
   sensors, train VAX pipeline for activity recognition using privacy sensitive sensors.
 
-> **NOTE:**  **M4.VAX pipeline** can be used directly to build in-situ models for privacy-sensitive sensors
-> using public av_ensemble without re-training on reference homes, unless we need to train for new set of activities not
-> included in original paper.
+### Flowchart for training VAX Pipeline in a new home.
 
-### Flowchart for training A/V Ensemble. 
+> **NOTE:**  VAX can be used directly to build in-situ models for privacy-sensitive sensors
+> using public av_ensemble created by authors for activities mentioned in the paperwithout re-training on reference
+> homes, unless we need to train for new set of activities not included in original paper. To retrain A/V ensemble, look
+> at section [here](#flowchart-for-training-av-ensemble)
+
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
+flowchart LR
+    Home(["M1. Data Collection"])
+    AV(["M3. A/V labels off-the-shelf models"])
+    DP(["M2. Data Preprocessing"])   
+    finalensemble{{Public A/V Ensemble}}
+    style finalensemble fill:#f92,stroke:#333,stroke-width:4px
+    vaxav{{M4. Training VAX Pipeline}}
+    vaxmodel([Final VAX Model for privacy-preserving sensors])
+    style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
+    activityfromav[M4. Activity labels from A/V Ensemble]
+    subgraph "🏠 New Home"  
+      Home --> DP--> AV --> activityfromav
+      finalensemble --> activityfromav
+      activityfromav --> vaxav
+      DP --> vaxav
+      vaxav --> vaxmodel
+    end
+
+```
+### Flowchart for training AV Ensemble.
+
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
@@ -89,30 +117,6 @@ flowchart LR
       Homen --> DPn --> avmodule
       Homen --> gtn --> avmodule
     end
-```
-
-
-### Flowchart for training VAX Pipeline in a new home. 
-```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}} }%%
-flowchart LR
-    Home(["M1. Data Collection"])
-    AV(["M3. A/V labels off-the-shelf models"])
-    DP(["M2. Data Preprocessing"])   
-    finalensemble{{Public A/V Ensemble}}
-    style finalensemble fill:#f92,stroke:#333,stroke-width:4px
-    vaxav{{M4. Training VAX Pipeline}}
-    vaxmodel([Final VAX Model for privacy-preserving sensors])
-    style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
-    activityfromav[M4. Activity labels from A/V Ensemble]
-    subgraph "🏠 New Home"  
-      Home --> DP--> AV --> activityfromav
-      finalensemble --> activityfromav
-      activityfromav --> vaxav
-      DP --> vaxav
-      vaxav --> vaxmodel
-    end
-
 ```
 
 Each module, further is divided into 4 sections as follows:
