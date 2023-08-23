@@ -1,25 +1,32 @@
-# VAX: A/V ensemble to combine outputs from any set of off-the-shelf models for human activity recognition.
+# VAX: Data Collection and Data Annotation
 
-**About:** This tools helps in building an ensemble to map top prediction output from any off-the-shelf A/V model to . 
 
-## Section A. Workbench Setup
+**About:** This module presents code for running data collection from audio, video (for A/V pipeline), and four privacy preserving
+sensors (Doppler, Lidar, ThermalCam, Micarray). It also consists of a data annotation tool, which can run in parallel to
+data collection process to mark ground truth for instances in real time.
 
-### A.1: Environment Setup:
+## 1. Workbench Setup
 
-### 1. Clone (or Fork!) this repository
+To collect data from A/V and privacy-sensitive sensors, we need corresponding sensor
+hardware along with connectors (either USB or Ethernet Cables). Based on amount of sensors you wish to collect data
+from, We might need power extension, Ethernet switches etc.
+
+### Environment Setup:
+
+### a. Clone (or Fork!) this repository
 
 ```
 git clone https://github.com/synergylabs/vax.git
-cd vax/build_av_ensemble
+cd vax/data_collection_annotation
 ```
 
-### 2. Create a virtual environment and install python packages
+### b. Create a virtual environment and install python packages
 
 We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
 
 ```bash
-conda create -n "vax_av_ensemble" python=3.9
-conda activate vax_av_ensemble
+conda create -n "vax_data_collection" python=3.9
+conda activate vax_data_collection
 conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
 
 python -m pip install -r requirements.txt
@@ -37,8 +44,6 @@ python -m pip install -r requirements.txt
 ## Section D. Understanding Module Output
 
 **Details coming soon...**
-
-
 
 ## Reference
 For more details, contact [prasoonpatidar@cmu.edu](prasoonpatidar@cmu.edu).

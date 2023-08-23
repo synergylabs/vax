@@ -1,6 +1,6 @@
-# VAX: A/V ensemble to combine outputs from any set of off-the-shelf models for human activity recognition.
+# VAX: Data Preprocessing and Data Visualization
 
-**About:** This tools helps in building an ensemble to map top prediction output from any off-the-shelf A/V model to . 
+**About:**??
 
 ## Section A. Workbench Setup
 
@@ -10,7 +10,7 @@
 
 ```
 git clone https://github.com/synergylabs/vax.git
-cd vax/build_av_ensemble
+cd vax/data_preprocessing_visualization
 ```
 
 ### 2. Create a virtual environment and install python packages
@@ -18,8 +18,8 @@ cd vax/build_av_ensemble
 We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
 
 ```bash
-conda create -n "vax_av_ensemble" python=3.9
-conda activate vax_av_ensemble
+conda create -n "vax_data_preprocessing" python=3.9
+conda activate vax_data_preprocessing
 conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
 
 python -m pip install -r requirements.txt
@@ -37,8 +37,6 @@ python -m pip install -r requirements.txt
 ## Section D. Understanding Module Output
 
 **Details coming soon...**
-
-
 
 ## Reference
 For more details, contact [prasoonpatidar@cmu.edu](prasoonpatidar@cmu.edu).
