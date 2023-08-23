@@ -56,13 +56,14 @@ The source code for VAX is broken into 4 independent modules.
 > **NOTE:**  VAX can be used directly to build in-situ models for privacy-sensitive sensors
 > using public av_ensemble created by authors for activities mentioned in the paperwithout re-training on reference
 > homes, unless we need to train for new set of activities not included in original paper. To retrain A/V ensemble, look
-> at section [here](#flowchart-for-training-av-ensemble)
+> at section [below](#flowchart-for-training-av-ensemble)
 
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
     Home(["M1. Data Collection"])
+    Deploysensors([VAX Hardware Deployment])
     AV(["M3. A/V labels off-the-shelf models"])
     DP(["M2. Data Preprocessing"])   
     finalensemble{{Public A/V Ensemble}}
@@ -71,11 +72,12 @@ flowchart LR
     vaxmodel([Final VAX Model for privacy-preserving sensors])
     style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
     activityfromav[M4. Activity labels from A/V Ensemble]
-    subgraph "🏠 New Home"  
-      Home --> DP--> AV --> activityfromav
+    rawdatafromx[M4. Featurized data for privacy-sensitive sensors]
+    subgraph "🏠 Home deployment for VAX"  
+      Deploysensors --> Home --> DP--> AV --> activityfromav
       finalensemble --> activityfromav
       activityfromav --> vaxav
-      DP --> vaxav
+      DP --> rawdatafromx --> vaxav
       vaxav --> vaxmodel
     end
 
@@ -86,36 +88,42 @@ flowchart LR
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
     Home1(["M1. Data Collection"])
+    Home1a(["M1. Data Annotation"])
     AV1(["M3. A/V labels from off-the-shelf models"])
     DP1(["M2. Data Preprocessing"])
     Home2(["M1. Data Collection"])
+    Home2a(["M1. Data Annotation"])
     AV2(["M3. A/V labels from off-the-shelf models"])
     DP2(["M2. Data Preprocessing"])
     Homen(["M1. Data Collection"])
+    Homena(["M1. Data Annotation"])
     AVn(["M3. A/V labels from off-the-shelf models"])
     DPn(["M2. Data Preprocessing"])
     avmodule{{M3. Public A/V Ensemble}}
     style avmodule fill:#f92,stroke:#333,stroke-width:4px
     gt1(Ground Truth Labels)
+    style gt1 fill:#fff,stroke:#333,stroke-width:1px
     gt2(Ground Truth Labels)
+    style gt2 fill:#fff,stroke:#333,stroke-width:1px
     gtn(Ground Truth Labels)
+    style gtn fill:#fff,stroke:#333,stroke-width:1px
     subgraph ""  
       avmodule
     end
     subgraph "🏠 Reference Home 1"  
-      Home1 --> AV1 --> avmodule
-      Home1 --> DP1 --> avmodule
-      Home1 --> gt1 --> avmodule
+      Home1 --> DP1 --> AV1 --> avmodule
+      DP1 --> avmodule
+      Home1a --> gt1 --> avmodule
     end
     subgraph "🏠 Reference Home 2"  
-      Home2 --> AV2 --> avmodule
-      Home2 --> DP2 --> avmodule
-      Home2 --> gt2 --> avmodule
+      Home2 --> DP2 --> AV2 --> avmodule
+      DP2 --> avmodule
+      Home2a --> gt2 --> avmodule
     end
     subgraph "... 🏠 Reference Home n"  
-      Homen --> AVn --> avmodule
-      Homen --> DPn --> avmodule
-      Homen --> gtn --> avmodule
+      Homen --> DPn --> AVn --> avmodule
+      DPn --> avmodule
+      Homena --> gtn --> avmodule
     end
 ```
 
