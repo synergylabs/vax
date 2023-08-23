@@ -74,17 +74,17 @@ flowchart LR
     subgraph ""  
       avmodule
     end
-    subgraph "🏠 Home 1"  
+    subgraph "🏠 Reference Home 1"  
       Home1 --> AV1 --> avmodule
       Home1 --> DP1 --> avmodule
       Home1 --> gt1 --> avmodule
     end
-    subgraph "🏠 Home 2"  
+    subgraph "🏠 Reference Home 2"  
       Home2 --> AV2 --> avmodule
       Home2 --> DP2 --> avmodule
       Home2 --> gt2 --> avmodule
     end
-    subgraph "... 🏠 Home n"  
+    subgraph "... 🏠 Reference Home n"  
       Homen --> AVn --> avmodule
       Homen --> DPn --> avmodule
       Homen --> gtn --> avmodule
@@ -92,7 +92,7 @@ flowchart LR
 ```
 
 
-### Flowchart for training VAX Pipeline. 
+### Flowchart for training VAX Pipeline in a new home. 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
