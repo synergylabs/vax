@@ -104,9 +104,10 @@ flowchart LR
     vaxav{{M4. Training VAX Pipeline}}
     vaxmodel([Final VAX Model for privacy-preserving sensors])
     style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
-    activityfromav[Activity labels from A/V Ensemble]
+    activityfromav[M4. Activity labels from A/V Ensemble]
     subgraph "🏠 New Home"  
-      Home --> DP--> AV --> finalensemble --> activityfromav
+      Home --> DP--> AV --> activityfromav
+      finalensemble --> activityfromav
       activityfromav --> vaxav
       DP --> vaxav
       vaxav --> vaxmodel
