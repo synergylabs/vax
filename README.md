@@ -49,7 +49,7 @@ The source code for VAX is broken into 4 independent modules.
   preprocessed raw data for
   sensors, train VAX pipeline for activity recognition using privacy sensitive sensors.
 
-> **NOTE:**  **VAX pipeline (last module)** can be used directly to build in-situ models for privacy-sensitive sensors
+> **NOTE:**  **M4.VAX pipeline** can be used directly to build in-situ models for privacy-sensitive sensors
 > using public av_ensemble without re-training on reference homes, unless we need to train for new set of activities not
 > included in original paper.
 
@@ -67,6 +67,7 @@ flowchart LR
     AVn(["M3. A/V labels from off-the-shelf models"])
     DPn(["M2. Data Preprocessing"])
     avmodule{{M3. Public A/V Ensemble}}
+    style avmodule fill:#f92,stroke:#333,stroke-width:4px
     gt1(Ground Truth Labels)
     gt2(Ground Truth Labels)
     gtn(Ground Truth Labels)
@@ -98,11 +99,12 @@ flowchart LR
     Home(["M1. Data Collection"])
     AV(["M3. A/V labels off-the-shelf models"])
     DP(["M2. Data Preprocessing"])   
-    finalensemble[Public A/V Ensemble]
+    finalensemble{{Public A/V Ensemble}}
+    style finalensemble fill:#f92,stroke:#333,stroke-width:4px
     vaxav{{M4. Training VAX Pipeline}}
     vaxmodel([Final VAX Model for privacy-preserving sensors])
-    
-    activityfromav{{Activity labels from A/V Ensemble}}
+    style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
+    activityfromav[Activity labels from A/V Ensemble]
     subgraph "🏠 New Home"  
       Home --> DP--> AV --> finalensemble --> activityfromav
       activityfromav --> vaxav
