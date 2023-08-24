@@ -4,25 +4,25 @@
 
 ## Section A. Workbench Setup
 
-### A.1: Environment Setup:
+### Environment Setup:
 
-### 1. Clone (or Fork!) this repository
+### a. Clone (or Fork!) this repository
 
+```shell
+foo@bar:~$ git clone https://github.com/synergylabs/vax.git
+foo@bar:~$ cd vax/data_collection_annotation
 ```
-git clone https://github.com/synergylabs/vax.git
-cd vax/build_av_ensemble
-```
 
-### 2. Create a virtual environment and install python packages
+### b. Create a virtual environment and install python packages
 
 We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
 
-```bash
-conda create -n "vax_av_ensemble" python=3.9
-conda activate vax_av_ensemble
-conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
-
-python -m pip install -r requirements.txt
+```shell
+foo@bar:~$ conda create -n "vax_data_collection" python=3.9
+foo@bar:~$ conda activate vax_data_collection
+foo@bar:~$ conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 \
+pytorch-cuda=11.7 -c pytorch -c nvidia
+foo@bar:~$ python -m pip install -r requirements.txt
 ```
 **Details coming soon...**
 

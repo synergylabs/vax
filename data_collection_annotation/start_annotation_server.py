@@ -25,7 +25,7 @@ from collections import OrderedDict
 from config.constants import Constants
 
 # Config to run data collection
-config_file = 'config/dc_config.json'
+config_file = 'config/data_collection_config.json.json'
 run_config = json.load(open(config_file, 'r'))
 
 # Initialize Logger and streamlit page setup
@@ -90,14 +90,7 @@ if True:
     st.title("VAX Data Collection App")
     st.markdown(f"## User: {run_config['name']}")
 
-location_activity_mapping = {
-    'kitchen': ['Blender', 'Chopping', 'Grating', 'Microwave', 'WashingDishes', 'DishwasherLoading',
-                'DishwasherRunning', 'Baking', 'CookingOnStove', 'FridgeOpen', 'FridgeClose'],
-    'livingroom': ['Vacuum', 'Doorbell', 'Coughing', 'Eating', 'Drinking', 'WatchingTV', 'Sitting', 'Walking',
-                   'Exercising', 'Knocking', 'Talking'],
-    'bathroom': ['Shaver In Use', 'ToilerFlushing', 'HairDryer', 'HairBrush', 'Toothbrush', 'HandWash', 'Shower'],
-    'bedroom': ['sleeping', 'sleepstages']
-}
+location_activity_mapping = json.load(open('config/data_annotations.json'))
 
 left_column, right_column = st.columns(2)
 with left_column:
