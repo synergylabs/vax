@@ -33,30 +33,22 @@ per activity in each home (average accuracy of 79%) since VAX reduces the user b
 
 # Source Code Architecture
 
-The source code for VAX is broken into 4 independent modules.
+The source code for VAX is broken into 3 independent modules.
 
-- **[M1. Data Collection and Annotation](data_collection_annotation/):** Collecting data across variety of sensing
+- **[M1. Data Collection](data_collection/):** Collecting data across variety of sensing
   modalities with real-time ground truth
-  annotation.
-- **[M2. Data Preprocessing and Visualization](data_processing_visualization/):** Preprocess collected data into
-  activity
-  instances, combining input across
-  all
+  annotation. It also Preprocess collected data into activity instances, combining input across all
   sensors, and create visualization of activity instance raw data.
-- **[M3. Building Audio-Video (A/V) Ensemble](build_av_ensemble/):** Using raw A/V data for activity instances, and
-  off-the-shelf pretrained
-  models
-  for activity recognition using audio/video models to build VAX A/V ensemble for public use.
-- **[M4. Building self-supervised models (VAX pipeline)](vax_training/):** Given a (public) VAX A/V ensemble, and
-  preprocessed raw data for
-  sensors, train VAX pipeline for activity recognition using privacy sensitive sensors.
+- **[M2. Generating (A/V) labels](build_av_ensemble/):** Using raw A/V data for activity instances, and
+  off-the-shelf pretrained models for activity recognition to generate A/V labels for collected instances.
+- **[M3. Building self-supervised models (VAX pipeline)](vax_training/):** Given A/V labels using VAX A/V ensemble, and
+  preprocessed raw data for sensors, train VAX pipeline for activity recognition using privacy sensitive sensors.
 
 ### Flowchart for training VAX Pipeline in a new home.
 
 > **NOTE:**  VAX can be used directly to build in-situ models for privacy-sensitive sensors
 > using public av_ensemble created by authors for activities mentioned in the paperwithout re-training on reference
-> homes, unless we need to train for new set of activities not included in original paper. To retrain A/V ensemble, look
-> at section [below](#flowchart-for-training-av-ensemble)
+> homes, unless we need to train for new set of activities not included in original paper.
 
 
 ```mermaid
@@ -64,15 +56,15 @@ The source code for VAX is broken into 4 independent modules.
 flowchart LR
     Home(["M1. Data Collection"])
     Deploysensors([VAX Hardware Deployment])
-    AV(["M3. A/V labels off-the-shelf models"])
-    DP(["M2. Data Preprocessing"])   
-    finalensemble{{Public A/V Ensemble}}
+    AV(["M2. A/V labels off-the-shelf models"])
+    DP(["M1. Data Preprocessing"])   
+    finalensemble{{VAX A/V Ensemble}}
     style finalensemble fill:#f92,stroke:#333,stroke-width:4px
-    vaxav{{M4. Training VAX Pipeline}}
+    vaxav{{M3. Training VAX Pipeline}}
     vaxmodel([Final VAX Model for privacy-preserving sensors])
     style vaxmodel fill:#29f,stroke:#333,stroke-width:4px
-    activityfromav[M4. Activity labels from A/V Ensemble]
-    rawdatafromx[M4. Featurized data for privacy-sensitive sensors]
+    activityfromav[M2. Activity labels from A/V Ensemble]
+    rawdatafromx[M3. Featurized data for privacy-sensitive sensors]
     subgraph "🏠 Home deployment for VAX"  
       Deploysensors --> Home --> DP--> AV --> activityfromav
       finalensemble --> activityfromav
@@ -82,50 +74,93 @@ flowchart LR
     end
 
 ```
-### Flowchart for training AV Ensemble.
 
-```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}} }%%
-flowchart LR
-    Home1(["M1. Data Collection"])
-    Home1a(["M1. Data Annotation"])
-    AV1(["M3. A/V labels from off-the-shelf models"])
-    DP1(["M2. Data Preprocessing"])
-    Home2(["M1. Data Collection"])
-    Home2a(["M1. Data Annotation"])
-    AV2(["M3. A/V labels from off-the-shelf models"])
-    DP2(["M2. Data Preprocessing"])
-    Homen(["M1. Data Collection"])
-    Homena(["M1. Data Annotation"])
-    AVn(["M3. A/V labels from off-the-shelf models"])
-    DPn(["M2. Data Preprocessing"])
-    avmodule{{M3. Public A/V Ensemble}}
-    style avmodule fill:#f92,stroke:#333,stroke-width:4px
-    gt1(Ground Truth Labels)
-    style gt1 fill:#fff,stroke:#333,stroke-width:1px
-    gt2(Ground Truth Labels)
-    style gt2 fill:#fff,stroke:#333,stroke-width:1px
-    gtn(Ground Truth Labels)
-    style gtn fill:#fff,stroke:#333,stroke-width:1px
-    subgraph ""  
-      avmodule
-    end
-    subgraph "🏠 Reference Home 1"  
-      Home1 --> DP1 --> AV1 --> avmodule
-      DP1 --> avmodule
-      Home1a --> gt1 --> avmodule
-    end
-    subgraph "🏠 Reference Home 2"  
-      Home2 --> DP2 --> AV2 --> avmodule
-      DP2 --> avmodule
-      Home2a --> gt2 --> avmodule
-    end
-    subgraph "... 🏠 Reference Home n"  
-      Homen --> DPn --> AVn --> avmodule
-      DPn --> avmodule
-      Homena --> gtn --> avmodule
-    end
-```
+[//]: # (### Flowchart for training AV Ensemble.)
+
+[//]: # ()
+[//]: # (```mermaid)
+
+[//]: # (%%{init: {"flowchart": {"htmlLabels": false}} }%%)
+
+[//]: # (flowchart LR)
+
+[//]: # (    Home1&#40;["M1. Data Collection"]&#41;)
+
+[//]: # (    Home1a&#40;["M1. Data Annotation"]&#41;)
+
+[//]: # (    AV1&#40;["M3. A/V labels from off-the-shelf models"]&#41;)
+
+[//]: # (    DP1&#40;["M2. Data Preprocessing"]&#41;)
+
+[//]: # (    Home2&#40;["M1. Data Collection"]&#41;)
+
+[//]: # (    Home2a&#40;["M1. Data Annotation"]&#41;)
+
+[//]: # (    AV2&#40;["M3. A/V labels from off-the-shelf models"]&#41;)
+
+[//]: # (    DP2&#40;["M2. Data Preprocessing"]&#41;)
+
+[//]: # (    Homen&#40;["M1. Data Collection"]&#41;)
+
+[//]: # (    Homena&#40;["M1. Data Annotation"]&#41;)
+
+[//]: # (    AVn&#40;["M3. A/V labels from off-the-shelf models"]&#41;)
+
+[//]: # (    DPn&#40;["M2. Data Preprocessing"]&#41;)
+
+[//]: # (    avmodule{{M3. Public A/V Ensemble}})
+
+[//]: # (    style avmodule fill:#f92,stroke:#333,stroke-width:4px)
+
+[//]: # (    gt1&#40;Ground Truth Labels&#41;)
+
+[//]: # (    style gt1 fill:#fff,stroke:#333,stroke-width:1px)
+
+[//]: # (    gt2&#40;Ground Truth Labels&#41;)
+
+[//]: # (    style gt2 fill:#fff,stroke:#333,stroke-width:1px)
+
+[//]: # (    gtn&#40;Ground Truth Labels&#41;)
+
+[//]: # (    style gtn fill:#fff,stroke:#333,stroke-width:1px)
+
+[//]: # (    subgraph ""  )
+
+[//]: # (      avmodule)
+
+[//]: # (    end)
+
+[//]: # (    subgraph "🏠 Reference Home 1"  )
+
+[//]: # (      Home1 --> DP1 --> AV1 --> avmodule)
+
+[//]: # (      DP1 --> avmodule)
+
+[//]: # (      Home1a --> gt1 --> avmodule)
+
+[//]: # (    end)
+
+[//]: # (    subgraph "🏠 Reference Home 2"  )
+
+[//]: # (      Home2 --> DP2 --> AV2 --> avmodule)
+
+[//]: # (      DP2 --> avmodule)
+
+[//]: # (      Home2a --> gt2 --> avmodule)
+
+[//]: # (    end)
+
+[//]: # (    subgraph "... 🏠 Reference Home n"  )
+
+[//]: # (      Homen --> DPn --> AVn --> avmodule)
+
+[//]: # (      DPn --> avmodule)
+
+[//]: # (      Homena --> gtn --> avmodule)
+
+[//]: # (    end)
+
+[//]: # (```)
 
 Each module, further is divided into 4 sections as follows:
 

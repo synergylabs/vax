@@ -10,7 +10,7 @@
 
 ```shell
 foo@bar:~$ git clone https://github.com/synergylabs/vax.git
-foo@bar:~$ cd vax/data_collection_annotation
+foo@bar:~$ cd vax/data_collection
 ```
 
 ### b. Create a virtual environment and install python packages

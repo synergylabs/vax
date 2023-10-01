@@ -133,3 +133,4 @@ cache/
 *.raw
 **.avi
 /build_av_ensemble/otc_models/model_ckpts/
+data_collection/cache
