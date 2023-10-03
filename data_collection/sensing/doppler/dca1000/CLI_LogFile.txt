@@ -1,0 +1,49 @@
+
+Sun Oct  1 04:32:57 2023
+Reset FPGA Command (req)
+
+Sun Oct  1 04:33:08 2023
+Reset FPGA : 
+OS error - -2
+
+Sun Oct  1 04:33:08 2023
+Return status : -2
+
+Sun Oct  1 04:40:00 2023
+Reset FPGA Command (req)
+
+Sun Oct  1 04:40:10 2023
+Reset FPGA : 
+OS error - -2
+
+Sun Oct  1 04:40:10 2023
+Return status : -2
+
+Sun Oct  1 04:40:45 2023
+Reset FPGA Command (req)
+
+Sun Oct  1 04:40:55 2023
+Reset FPGA : 
+OS error - -2
+
+Sun Oct  1 04:40:55 2023
+Return status : -2
+
+Sun Oct  1 04:41:04 2023
+Reset FPGA Command (req)
+
+Sun Oct  1 04:41:14 2023
+Reset FPGA : 
+OS error - -2
+
+Sun Oct  1 04:41:14 2023
+Return status : -2
+
+Sun Oct  1 04:46:09 2023
+Reset FPGA Command (req)
+
+Sun Oct  1 04:46:09 2023
+Reset FPGA command : Success
+
+Sun Oct  1 04:46:09 2023
+Return status : 0

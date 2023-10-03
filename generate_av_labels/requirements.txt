@@ -1,0 +1,21 @@
+numpy==1.23.5
+jupyter==1.0.0
+matplotlib==3.7.3
+pandas==1.5.3
+scikit-learn==1.3.1
+scipy==1.10.1
+opencv-python-headless==4.6.0.66
+requests
+soundfile
+librosa
+streamlit
+jsonify
+seaborn
+imblearn
+cleanlab
+scikit-image
+soundfile==0.11.0
+tensorflow==2.10.0
+moviepy==1.0.3
+openradar
+# //conda install -c conda-forge python-sounddevice
