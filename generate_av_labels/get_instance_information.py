@@ -68,8 +68,9 @@ except (ImportError, ModuleNotFoundError):
 
 MODEL_CHECKPOINT_DIR = 'otc_models/model_ckpts'
 MODEL_CONFIG_DIR = 'otc_models/model_configs'
-POSE_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/generate_av_labels/pose_cache'
-AUDIO_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/generate_av_labels/audio_cache'
+POSE_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/cache/pose_cache'
+AUDIO_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/cache/audio_cache'
+os.makedirs(POSE_CACHE_ROOT,exist_ok=True)
 os.makedirs(POSE_CACHE_ROOT,exist_ok=True)
 
 pose_extraction_config = {
@@ -84,16 +85,16 @@ pose_extraction_config = {
     'device': 'cpu'
 }
 
-def get_instance_raw_av_data(processed_data_dir, logger):
+def get_instance_raw_av_data(config, logger):
     vax_pipeline_object = dict()
     create_instances_ts_start = datetime.now()
-
+    processed_data_dir = config["data_dir"]
     vax_pipeline_object['instances'] = dict()
 
     activity_dirs = glob.glob(f"{processed_data_dir}/*")
-    for activity_dir in activity_dirs:
+    for activity_dir in activity_dirs[:2]:
         instance_dirs = glob.glob(f"{activity_dir}/*")
-        for instance_dir in instance_dirs:
+        for instance_dir in instance_dirs[:2]:
             groundtruth_activity = activity_dir.split("/")[-1]
             instance_id = instance_dir.split("/")[-1]
             # check if a/v raw data exists
@@ -102,11 +103,14 @@ def get_instance_raw_av_data(processed_data_dir, logger):
                 vax_pipeline_object['instances'][instance_id] = {
                     'activity_label':groundtruth_activity,
                     'instance_id':instance_id,
-                    'instance_av_file':instance_av_file
+                    'instance_av_file':instance_av_file,
+                    'instance_dir':instance_dir
                 }
 
+    # get pose and audio data
     vax_pipeline_object['instances'] = get_instance_audio_info(vax_pipeline_object['instances'])
-    # get pose data
+    vax_pipeline_object['instances'] = get_instance_pose_info(vax_pipeline_object['instances'])
+
     return vax_pipeline_object
 
 def get_instance_audio_info(all_instances):
@@ -121,10 +125,9 @@ def get_instance_audio_info(all_instances):
             camera_clip.audio.write_audiofile(audio_cache_file)
         audio_data, audio_sr = sf.read(audio_cache_file, dtype=np.int16)
         all_instances[instance_id].update({
-            'audio_data':audio_data
+            'audio_data':(audio_data, audio_sr)
         })
     return all_instances
-
 
 def get_instance_pose_info(all_instances):
     # init detector model
@@ -139,7 +142,8 @@ def get_instance_pose_info(all_instances):
 
     for instance_id in all_instances:
         instance_av_file = all_instances[instance_id]['instance_av_file']
-        pose_cache_file = f"{POSE_CACHE_ROOT}/{instance_id}.pb"
+        instance_gt = all_instances[instance_id]['activity_label']
+        pose_cache_file = f"{POSE_CACHE_ROOT}/{instance_gt}_camera_{instance_id}.mp4.pb"
         if os.path.exists(pose_cache_file):
             pose_results = pickle.load(open(pose_cache_file, 'rb'))
             print("Got pose results from cache..")
@@ -169,3 +173,5 @@ def get_instance_pose_info(all_instances):
             'pose_data':pose_results
         })
     return all_instances
+
+# get_instance_raw_av_data('/Volumes/Vax Storage/processed_data/P7', logging.getLogger("Logs"))

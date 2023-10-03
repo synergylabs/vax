@@ -84,9 +84,42 @@ def stgcn_ntu60_model(device='cpu'):
     return stgcn_model, label_map
 
 
-def pose_inference(instance_pose_data, posec3d_model, posec3d_label_map, orig_h=256, orig_w=456, short_side=480):
+def pose_inference(instance_pose_data, posec3d_model, posec3d_label_map, h=480, w=853, short_side=480):
+
+    num_frame = len(instance_pose_data)
+    fake_anno = dict(
+        frame_dir='',
+        label=-1,
+        img_shape=(h, w),
+        original_shape=(h, w),
+        start_index=0,
+        modality='Pose',
+        total_frames=num_frame)
+    num_person = max([len(x) for x in instance_pose_data])
+
+    num_keypoint = 17
+    keypoint = np.zeros((num_person, num_frame, num_keypoint, 2),
+                        dtype=np.float16)
+    keypoint_score = np.zeros((num_person, num_frame, num_keypoint),
+                              dtype=np.float16)
+    for i, poses in enumerate(instance_pose_data):
+        for j, pose in enumerate(poses):
+            pose = pose['keypoints']
+            keypoint[j, i] = pose[:, :2]
+            keypoint_score[j, i] = pose[:, 2]
+    fake_anno['keypoint'] = keypoint
+    fake_anno['keypoint_score'] = keypoint_score
+
+    results = inference_recognizer(posec3d_model, fake_anno)
+
+    df_scores = pd.DataFrame([(posec3d_label_map[xr[0]], xr[1]) for xr in results], columns=['label', 0]).set_index(
+        'label')
+    return df_scores
+
+
+def pose_inference_openpose(instance_pose_data, posec3d_model, posec3d_label_map, orig_h=256, orig_w=456, short_side=480):
     w, h = mmcv.rescale_size((orig_w, orig_h), (short_side, np.Inf))
-    openPose_to_poseNet = np.array([0, 15, 14, 17, 16, 5, 2, 6, 3, 7, 4, 11, 8, 12, 9, 13, 10])
+    # openPose_to_poseNet = np.array([0, 15, 14, 17, 16, 5, 2, 6, 3, 7, 4, 11, 8, 12, 9, 13, 10])
     num_frame = len(instance_pose_data)
     if num_frame==0:
         return pd.DataFrame(columns=['label', 0]).set_index('label')
@@ -106,8 +139,8 @@ def pose_inference(instance_pose_data, posec3d_model, posec3d_label_map, orig_h=
     keypoint_score = np.zeros((num_person, num_frame, num_keypoint),
                               dtype=np.float16)
     for i, (ts,pose_data) in enumerate(instance_pose_data):
-        keypoint[0, i]  = pose_data[0,openPose_to_poseNet,:2]
-        keypoint_score[0, i] = pose_data[0,openPose_to_poseNet, 2]
+        keypoint[0, i]  = pose_data[0,:,:2]
+        keypoint_score[0, i] = pose_data[0,:, 2]
         # for j, pose in enumerate(pose_data):
         #     pose = pose['keypoints']
         #     keypoint[j, i] = pose[openPose_to_poseNet, :2]

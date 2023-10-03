@@ -13,28 +13,21 @@ foo@bar:~$ git clone https://github.com/synergylabs/vax.git
 foo@bar:~$ cd vax/data_collection
 ```
 
-### b. Create a virtual environment and install python packages
+### b. Create a virtual environment, install python packages and openmm
 
 We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
 
 ```shell
-foo@bar:~$ conda create -n "vax_av_labels" python=3.9
+foo@bar:~$ conda create --name vax_av_labels python=3.8 -y
 foo@bar:~$ conda activate vax_av_labels
-foo@bar:~$ conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 \
-pytorch-cuda=11.7 -c pytorch -c nvidia
-foo@bar:~$ python -m pip install -r requirements.txt
-
-conda create --name vax_av_labels python=3.8 -y
-conda activate vax_av_labels
-conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 -c pytorch
-pip install mmcv==1.6.0 -f https://download.openmmlab.com/mmcv/dist/cpu/torch1.13.0/index.html
-pip install mmpose==0.29.0
-pip install -U openmim
-mim install mmengine
-mim install mmdet==2.28.2
-pip install -e git+https://github.com/open-mmlab/mmaction2.git@0c6182f8007ae78b512d9dd7320ca76cb1cfd938#egg=mmaction2
-
-
+foo@bar:~$ conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 -c pytorch
+foo@bar:~$ pip install -r requirements.txt
+foo@bar:~$ pip install mmcv==1.6.0 -f https://download.openmmlab.com/mmcv/dist/cpu/torch1.13.0/index.html
+foo@bar:~$ pip install mmpose==0.29.0
+foo@bar:~$ pip install -U openmim
+foo@bar:~$ mim install mmengine
+foo@bar:~$ mim install mmdet==2.28.2
+foo@bar:~$ pip install -e git+https://github.com/open-mmlab/mmaction2.git@0c6182f8007ae78b512d9dd7320ca76cb1cfd938#egg=mmaction2
 ```
 **Details coming soon...**
 

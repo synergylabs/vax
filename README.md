@@ -39,7 +39,7 @@ The source code for VAX is broken into 3 independent modules.
   modalities with real-time ground truth
   annotation. It also Preprocess collected data into activity instances, combining input across all
   sensors, and create visualization of activity instance raw data.
-- **[M2. Generating (A/V) labels](build_av_ensemble/):** Using raw A/V data for activity instances, and
+- **[M2. Generating (A/V) labels](generate_av_labels/):** Using raw A/V data for activity instances, and
   off-the-shelf pretrained models for activity recognition to generate A/V labels for collected instances.
 - **[M3. Building self-supervised models (VAX pipeline)](vax_training/):** Given A/V labels using VAX A/V ensemble, and
   preprocessed raw data for sensors, train VAX pipeline for activity recognition using privacy sensitive sensors.
