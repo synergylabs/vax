@@ -43,11 +43,11 @@ def jaccard(list1, list2):
     return float(intersection) / union
 
 
-from HAR.privacy_sensors.ml.trainer import get_clf
-from HAR.privacy_sensors.ml.featurize import get_features
-from HAR.privacy_sensors.ml.ensemble import get_ensemble
-from HAR.privacy_sensors.ml import context_activities, activity_context_map, instance_filters
-from HAR.utils import get_logger
+from trainer import get_clf
+from featurize import get_features
+from ensemble import get_ensemble
+from . import context_activities, activity_context_map, instance_filters
+from utils import get_logger
 
 
 def merge_dicts(dicts):
@@ -262,6 +262,7 @@ if __name__ == '__main__':
             'sensor_files': ['doppler.pb', 'lidar2d.pb', 'thermal.pb', 'micarray.pb', 'mites.csv', 'mites.csv'],
             'results_cache_dir': f'/home/prasoon/vax/cache/privacy_models/results_v10',
             'training_cache_dir': f'/home/prasoon/vax/cache/privacy_models/training_v10',
+            'base_data_dir': '/Volumes/Vax Storage/processed_data'
         }
 
         # get av labels
@@ -270,7 +271,7 @@ if __name__ == '__main__':
         df_av_labels = df_av_labels[['user', 'instance_id', 'groundtruth', 'best_prediction','best_score']]
         df_av_labels.columns = ['user', 'instance', 'gt', 'prediction','score']
         df_av_labels = df_av_labels.sort_values(by=['user','gt'])
-        data_dir = f'/Volumes/Vax Storage/processed_data'
+        data_dir = train_config['base_data_dir']
 
         if not os.path.exists(train_config['feature_cache_dir']):
             os.makedirs(train_config['feature_cache_dir'])

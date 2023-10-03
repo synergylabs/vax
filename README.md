@@ -178,14 +178,11 @@ provided above).
 
 Each of these modules can be run independent of each other and can be used for further research beyond VAX, like:
 
-- **Data handling for privacy-sensitive sensors**: The first two modules (**Data collection, annotation,
-  preprocessing and visualization**) can be used for any downstream tasks which utilizes sensing data across multiple
+- **Data handling for privacy-sensitive sensors**: The first module (**Data collection**) can be used for any downstream tasks which utilizes sensing data across multiple
   sensing modalities.
-- **Combining off-the-shelf models for any other task**: Module three (**Building A/V ensemble**) can be used
+- **Combining predictions from off-the-shelf models for any other task**: Module two (**Generating (A/V) labels**) can be used
   independent of collecting any data from
-  privacy-sensitive sensors for combining multiple off-the-shelf HAR models for any set of pre-defined activities with
-  some
-  signal differentation. Please look at Section 4.1 & 4.2 on HAR using off-the-shelf A/V models in the paper.
+  privacy-sensitive sensors for combining multiple off-the-shelf HAR models for given set of pre-defined activities. Please look at Section 4.1 & 4.2 on HAR using off-the-shelf A/V models in the paper.
 
 ## Reference
 
