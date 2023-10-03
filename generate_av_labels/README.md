@@ -12,7 +12,7 @@ foo@bar:~$ git clone https://github.com/synergylabs/vax.git
 
 ### b. Create a virtual environment, install python packages and openmm
 
-We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.9`.
+We recommend using conda. Tested on `Ubuntu 22.04`, with `python 3.8`.
 
 ```shell
 foo@bar:~$ conda create --name vax_av_labels python=3.8 -y
