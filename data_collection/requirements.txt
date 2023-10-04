@@ -25,7 +25,6 @@ cleanlab
 scikit-image
 # hdbscan
 keras==2.10.0
-mmcv-full==1.4.0
 mmaction2==0.24.0
 soundfile==0.11.0
 # tensorflow==2.10.0

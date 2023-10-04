@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # add data collection annotation directory to sensing
-echo "Add data_collection_annotation to root directory"
-export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection_annotation/"
-CONFIG_FILE="$HOME/vax/data_collection_annotation/config/data_collection_config.json"
+echo "Add data_collection to root directory"
+export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection/"
+CONFIG_FILE="$HOME/vax/data_collection/config/data_collection_config.json"
 
 # Activate conda env
 source $HOME/.bashrc

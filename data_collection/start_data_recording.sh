@@ -8,8 +8,8 @@ fi
 
 # add data collection annotation directory to sensing
 echo "Add data_collection_annotation to root directory"
-export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection_annotation/"
-CONFIG_FILE="$HOME/vax/data_collection_annotation/config/data_collection_config.json"
+export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection/"
+CONFIG_FILE="$HOME/vax/data_collection/config/data_collection_config.json"
 
 # Activate conda env
 source $HOME/.bashrc
@@ -24,9 +24,9 @@ sudo chmod a+rw /dev/ttyUSB*
 
 ## add dca file to ld library path
 echo "Add DCA1000 Binary to library path"
-LD_LIBRARY_PATH="$HOME/vax/data_collection_annotation/sensing/doppler/dca1000"
+LD_LIBRARY_PATH="$HOME/vax/data_collection/sensing/doppler/dca1000"
 export LD_LIBRARY_PATH
-export PATH="$PATH:$HOME/vax/data_collection_annotation/sensing/doppler/dca1000"
+export PATH="$PATH:$HOME/vax/data_collection/sensing/doppler/dca1000"
 
 # Start Thermal recording
 echo "Start Thermal Recording"
@@ -53,9 +53,9 @@ sleep 5
 
 # Start doppler recording
 echo "Start Doppler Recording"
-chmod +x sensing/doppler/run_doppler.py
+chmod +x sensing/doppler/run_doppler_awr1642.py
 # Starting a gnome terminal manually: /usr/bin/dbus-launch /usr/bin/gnome-terminal &
-python sensing/doppler/run_doppler.py $CONFIG_FILE &
+python sensing/doppler/run_doppler_awr1642.py $CONFIG_FILE &
 sleep 5
 
 wait

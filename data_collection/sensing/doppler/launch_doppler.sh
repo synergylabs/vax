@@ -7,9 +7,9 @@ if test -z "$DBUS_SESSION_BUS_ADDRESS" ; then
 fi
 
 # add data collection annotation directory to sensing
-echo "Add data_collection_annotation to root directory"
-export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection_annotation/"
-CONFIG_FILE="$HOME/vax/data_collection_annotation/config/data_collection_config.json"
+echo "Add data_collection to root directory"
+export PYTHONPATH="${PYTHONPATH}:${HOME}/vax/data_collection/"
+CONFIG_FILE="$HOME/vax/data_collection/config/data_collection_config.json"
 
 # Activate conda env
 source $HOME/.bashrc
@@ -30,9 +30,9 @@ export PATH="$PATH:$HOME/vax/data_collection_annotation/sensing/doppler/dca1000"
 
 # Start doppler recording
 echo "Start Doppler Recording"
-chmod +x sensing/doppler/run_doppler.py
+chmod +x sensing/doppler/run_doppler_awr1642.py
 # Starting a gnome terminal manually: /usr/bin/dbus-launch /usr/bin/gnome-terminal &
-python sensing/doppler/run_doppler.py $CONFIG_FILE &
+python sensing/doppler/run_doppler_awr1642.py $CONFIG_FILE &
 # /usr/bin/dbus-launch /usr/bin/gnome-terminal -x bash -c "python run_doppler.py;exec bash" &
 
 wait

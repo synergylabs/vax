@@ -167,7 +167,7 @@ OS environments.
 
 While data collection is running in background, you can start data annotation server to start annotations in real time as follows
 ```shell
-foo@bar:~$ streamlit run start_annotation_server.py # Running this will open a new terminal to show status of closing multiple sensors
+foo@bar:~$ streamlit run annotation_server.py # Running this will open a new terminal to show status of closing multiple sensors
 ```
 It opens up a web interface as belows:
 ![Data Collection Interface](data_annotation_server.png)
@@ -198,11 +198,12 @@ visualizations for manual analysis.
 To run preprocessing step, run the command:
 
 ```shell
-foo@bar:~$ python preprocess_data.py <RAW_DATA_DIR> # Running this will open a new terminal to show status of closing multiple sensors
+foo@bar:~$ python preprocess_data.py
 ```
 
-where ```<RAW_DATA_DIR>``` is same as ```<out_data_dir>``` from data collection config. It is where all the collected raw data files,
-and label files are stored. Preprocessed data is stored in ```<RAW_DATA_DIR>/processed_data``` in following directory structure.
+The script uses config file used for data collection and present in ```config/data_collection_config.json```, and
+Preprocessed data is stored in ```<out_data_dir>/<name>/processed_data``` in following directory structure, where ```out_data_dir```
+and ```name``` are defined in data collection config.
 
 ```text
 ├── <ActivityID>

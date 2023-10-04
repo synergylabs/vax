@@ -24,7 +24,7 @@ from preprocessing.micarray import process_micarray_data, visualize_micarray_dat
 from preprocessing.thermalcam import process_thermal_data, visualize_thermal_data
 
 
-default_config_file = 'config/data_processing_config.json'
+default_config_file = 'config/data_collection_config.json'
 visualize = True
 
 try:
@@ -35,7 +35,7 @@ except:
 
 preprocess_config = json.load(open(config_file, 'r'))
 
-user_raw_data_dir = preprocess_config["user_raw_data_dir"]
+user_raw_data_dir = f'{preprocess_config["out_data_dir"]}/{preprocess_config["name"]}'
 date_folders = glob.glob(f"{user_raw_data_dir}/*/")
 
 write_dir = f'{user_raw_data_dir}/processed_data'

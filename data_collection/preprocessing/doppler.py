@@ -80,10 +80,10 @@ def visualize_doppler_data(processed_data_dir):
                     # initialize video writer
                     # Define the codec and create VideoWriter object
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                    out = cv2.VideoWriter(f'{instance_viz_dir}/doppler_viz.mp4', fourcc, 12, (frame_size[0], frame_size[1]), isColor=True)
+                    out = cv2.VideoWriter(f'{instance_viz_dir}/doppler_viz.mp4', fourcc, 4, (frame_size[1], frame_size[0]), isColor=True)
                     for ts, data in doppler_data:
                         det_matrix_vis = np.fft.fftshift(data['det_matrix'], axes=1)
-                        img = det_matrix_vis.T
+                        img = det_matrix_vis
                         img = img.astype(np.float32)
                         img = 255 * (img - img.min()) / (img.max() - img.min())
                         img_col = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_VIRIDIS)

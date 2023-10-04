@@ -10,8 +10,8 @@ sensors_ckpt_config = {
     },
     'doppler': {
         'ckpt_file': '/tmp/doppler.ckpt',
-        'proc_file': 'run_doppler.py',
-        'launch_file': './launch_doppler.sh'
+        'proc_file': 'run_doppler_awr1642.py',
+        'launch_file': './launch_doppler_awr1642.sh'
     },
     'lidar2d': {
         'ckpt_file': '/tmp/lidar2d.ckpt',

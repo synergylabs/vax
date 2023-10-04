@@ -4,10 +4,47 @@ import numpy as np
 import cv2
 import tempfile
 import time
+import serial
+import sys
+from pathlib import Path
+from serial.tools import list_ports
 awr1642_filename = tempfile.mktemp(prefix='delme_awr1642_unlimited_',
                                      suffix='.csv', dir='')
 file_handler = open(awr1642_filename,'w')
-cliport, dataport, configdict = startDoppler()
+AWR_DEVICE_NAME = 'AWR1642BOOST-ODS'
+# CLIPORT_ADDR = '/dev/ttyACM0'
+DEVICE_HWID = 'SER=R0061036'
+CLIPORT_HWID = ':1.0'
+# 'USB VID:PID=0451:BEF3  LOCATION=1-3.4.4.4.2:1.0'
+CLIPORT_BAUDRATE = 115200
+# DATAPORT_ADDR = '/dev/ttyACM1'
+DATAPORT_HWID = ':1.3'
+DATAPORT_BAUDRATE = 921600
+BASE_CONFIG = f'{Path(__file__).parent}/RangeDopplerHeatmap.cfg'
+
+# get cliport address
+ports = serial.tools.list_ports.comports()
+cliport_address = None
+for port in ports:
+    print(port.hwid, port.device)
+    if (CLIPORT_HWID in port.hwid) & (DEVICE_HWID in port.hwid):
+        cliport_address = port.device
+if cliport_address is None:
+    print("CLI port not found for doppler, exiting")
+    sys.exit(1)
+print(f"Got CLI Port Address: {cliport_address}")
+
+dataport_address = None
+for port in ports:
+    print(port.hwid, port.device)
+    if (DATAPORT_HWID in port.hwid) & (DEVICE_HWID in port.hwid):
+        dataport_address = port.device
+if cliport_address is None:
+    print("Data port not found for doppler, exiting")
+    sys.exit(1)
+print(f"Got DATA Port Address: {dataport_address}")
+
+cliport, dataport, configdict = startDoppler(cliport_address, dataport_address, BASE_CONFIG)
 while True:
     try:
         dataOk, frameNumber, detObj = readAndParseData1642Boost(dataport, configdict)

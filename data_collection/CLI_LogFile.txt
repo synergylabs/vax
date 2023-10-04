@@ -1,0 +1,10 @@
+
+Wed Oct  4 15:08:08 2023
+Reset FPGA Command (req)
+
+Wed Oct  4 15:08:18 2023
+Reset FPGA : 
+OS error - -2
+
+Wed Oct  4 15:08:18 2023
+Return status : -2

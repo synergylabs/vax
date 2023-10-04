@@ -5,7 +5,7 @@ import numpy as np
 
 # Change the configuration file name
 configFileName = './RangeDopplerHeatmap.cfg'
-configFileName = 'configs/30fps_config.cfg'
+# configFileName = 'configs/30fps_config.cfg'
 # configFileName = './RangeDopplerHeatmap.cfg'
 
 CLIport = {}
@@ -28,8 +28,30 @@ def serialConfig(configFileName):
     # Dataport = serial.Serial('/dev/ttyACM1', 921600)
 
     # Windows
-    CLIport = serial.Serial('/dev/ttyACM1', 115200)
-    Dataport = serial.Serial('/dev/ttyACM2', 921600)
+    CLIport = serial.Serial('/dev/ttyACM0', 115200)
+    Dataport = serial.Serial('/dev/ttyACM1', 921600)
+
+    # Read the configuration file and send it to the board
+    config = [line.rstrip('\r\n') for line in open(configFileName)]
+    for i in config:
+        CLIport.write((i + '\n').encode())
+        print(i)
+        time.sleep(0.01)
+
+    return CLIport, Dataport
+
+def serialConfigCustom(cliport_address, dataport_address, configFileName):
+    global CLIport
+    global Dataport
+    # Open the serial ports for the configuration and the data ports
+
+    # Raspberry pi
+    # CLIport = serial.Serial('/dev/ttyACM0', 115200)
+    # Dataport = serial.Serial('/dev/ttyACM1', 921600)
+
+    # Windows
+    CLIport = serial.Serial(cliport_address, 115200)
+    Dataport = serial.Serial(dataport_address, 921600)
 
     # Read the configuration file and send it to the board
     config = [line.rstrip('\r\n') for line in open(configFileName)]
@@ -371,12 +393,12 @@ def readAndParseData1642Boost(Dataport, configParameters):
 
     return dataOK, frameNumber, detObj
 
-def startDoppler():
+def startDoppler(cliport_address, dataport_address, cfg_file):
     # Configurate the serial port
-    CLIport, Dataport = serialConfig(configFileName)
+    CLIport, Dataport = serialConfigCustom(cliport_address, dataport_address, cfg_file)
 
     # Get the configuration parameters from the configuration file
-    configParameters = parseConfigFile(configFileName)
+    configParameters = parseConfigFile(cfg_file)
 
     return CLIport, Dataport, configParameters
 

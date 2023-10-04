@@ -1,7 +1,7 @@
 {
 
   // Output directory to write raw data files for given experiment
-  "user_raw_data_dir": "/home/synergy/vax/data_collection_annotation/cache/temp_user",
+  "user_raw_data_dir": "/home/synergy/vax/data_collection/cache/temp_user2",
   "timezone": "America/New_York",
 
   // Configs below consist of name of devices for a given sensing modalities, as sensing modalities can support multiple devices.
