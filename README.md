@@ -1,9 +1,6 @@
 # VAX: Using Existing Video and Audio-based Activity Recognition Models to Bootstrap Privacy-Sensitive Sensors
 
-TBD:[[paper (IMWUT 2023)](https://doi.org/10.1145/3610907)]
-TBD:[[talk (IMWUT 2023)](https://www.youtube.com/)]
-TBD:[[Project Video](https://www.youtube.com/)]
-TBD:[[Installation Video](https://www.youtube.com/)]
+[[paper (IMWUT 2023)](https://doi.org/10.1145/3610907)]
 
 **Authors:**
 [[Prasoon Patidar](http://prasoonpatidar.com/)]
