@@ -15,7 +15,7 @@ imblearn
 cleanlab
 scikit-image
 soundfile==0.11.0
-tensorflow==2.10.0
+tensorflow==2.12.1
 moviepy==1.0.3
 openradar
 # //conda install -c conda-forge python-sounddevice
