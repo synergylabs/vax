@@ -2,9 +2,9 @@
 Config class for strict parameters for training optics models
 '''
 import os
-ROOT_DIR = f'..'
+ROOT_DIR = '..'
 if not os.path.exists(ROOT_DIR):
-    ROOT_DIR = f'..'
+    ROOT_DIR = '..'
 class OpticsConfig:
     raw_models = {
         #     'samosa':f'{ROOT_DIR/vax/cache/av_results_23_1_23/samosa/*',

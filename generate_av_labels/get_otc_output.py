@@ -1,39 +1,21 @@
 """
 This file gets raw data from
 """
-import glob
-import sys
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy
-from collections import Counter
 import os
 import pickle
 from copy import deepcopy
-import shutil
 # mmwave for noise reduction
 # import mmwave.dsp as dsp
 # import mmwave.clustering as clu
-import itertools
 
 # throwing sklearn to the problem
 from sklearn.metrics import *
-from sklearn.preprocessing import normalize
 from sklearn.ensemble import *
-import xgboost
-from sklearn.svm import SVC
 from sklearn.model_selection import *
 from sklearn.cluster import *
-from sklearn.mixture import GaussianMixture
 
 from datetime import datetime
 import time
-import mmcv
-import torch
-from mmcv import DictAction
-from mmaction.apis import inference_recognizer, init_recognizer
 
 from utils import time_diff
 from otc_models import get_model

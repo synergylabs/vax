@@ -6,7 +6,7 @@ base_config = {
     # fallback configuration
     'run_id': 'test_e2e',
     'run_context': 'Kitchen',
-    'cache_dir': f'/Users/ppatida2/VAX/vax/cache/phase2_e2e',
+    'cache_dir': '/Users/ppatida2/VAX/vax/cache/phase2_e2e',
     'activity_set': ['Baking', 'Blender', 'Chopping+Grating', 'CookingOnStove', 'FridgeOpen',
                      'Microwave', 'WashingDishes'],
     'featurizer': 'm2',

@@ -21,7 +21,6 @@ import sys
 import numpy as np
 import resampy
 import soundfile as sf
-import tensorflow as tf
 
 import params as yamnet_params
 import yamnet as yamnet_model

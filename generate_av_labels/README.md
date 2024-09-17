@@ -26,6 +26,20 @@ foo@bar:~$ mim install mmengine
 foo@bar:~$ mim install mmdet==2.28.2
 foo@bar:~$ pip install -e git+https://github.com/open-mmlab/mmaction2.git@0c6182f8007ae78b512d9dd7320ca76cb1cfd938#egg=mmaction2
 ```
+
+```shell
+conda create --name vax_av_labels python=3.8 -y
+conda activate vax_av_labels
+pip install torch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1
+pip install -U openmim
+mim install -U mmcv-full==1.7.0 mmdet==2.28.2  mmengine==0.7.2 mmpose==0.29.0
+cd generate_av_labels/mmaction2
+pip install -e .
+cd ../
+pip install -r requirements.txt
+# download config files for mmdetection 
+mim download mmdet --config faster_rcnn_r50_fpn_2x_coco.py --dest otc_models/model_ckpts
+```
 ## Section B. Module Configuration
 
 To generate AV labels, you need to provide processed data from X sensors, and for each instance in processed data, you need to add an ```camera.mp4``` file
