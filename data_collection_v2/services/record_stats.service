@@ -1,0 +1,13 @@
+[Unit]
+Description=stats_record Service
+After=multi-user.target
+
+[Service]
+Type=idle
+User=vax
+ExecStart=/home/vax/venv-vax/bin/python /home/vax/vax-rpi/sensing/stats_display.py
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
