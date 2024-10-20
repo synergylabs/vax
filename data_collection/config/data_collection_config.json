@@ -1,10 +1,10 @@
 {
   // Name of the experiment, in general refering to data collected for a given user/home
-  "name": "test_user_oct4",
-  "timezone": "America/New_York",
+  "name": "P14",
+  "timezone": "America/Los_Angeles",
 
   // Output directory to write raw data files for given experiment
-  "out_data_dir": "/home/synergy/vax/data_collection/cache",
+  "out_data_dir": "/Users/ppatida2/VAX/DataCollection/phase3",
 
   // Configs below consist of name of devices for a given sensing modalities, as sensing modalities can support multiple devices.
   // The value of device_<modality> should be same a folder in sensing/<modality>.

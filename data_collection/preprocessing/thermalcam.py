@@ -1,3 +1,6 @@
+import _pickle
+import binascii
+
 import pandas as pd
 import numpy as np
 import base64
@@ -24,10 +27,11 @@ def process_thermal_data(raw_data_dir, df_labels, write_dir, prefix="flir"):
     for _ in range(len(start_times)):
         labels_data.append(list())
 
-    thermal_files = sorted(glob.glob(f"{raw_data_dir}/{prefix}*.csv"))
+    thermal_files = sorted(glob.glob(f"{raw_data_dir}/{prefix}*.b64"))
     ts = 0
     prev_label = ""
     for thermal_file in thermal_files:
+        print(f"Processing Thermal file: {thermal_file}")
         remainder = ""
         with open(thermal_file, "r") as myFile:
             while True:
@@ -48,7 +52,11 @@ def process_thermal_data(raw_data_dir, df_labels, write_dir, prefix="flir"):
                 if chunk == "":
                     break
                 # thermal_data.append(process_chunk(chunk))
+                if len(chunk.split(" | ")) < 2:
+                    print(f"Not enough chunk size, {len(chunk)}, {thermal_file}, {chunk[:100]}")
+                    continue
                 ts, data = process_chunk(chunk)
+                if ts == -1: break
                 if np.any((start_times < ts) & (end_times > ts)):
                     label_match_idxs = np.where((start_times < ts) & (end_times > ts))[0]
                     for label_match_idx in label_match_idxs:
@@ -83,10 +91,21 @@ def visualize_thermal_data(processed_data_dir):
                     frame_size = thermal_data[0][1].shape
                     # initialize video writer
                     # Define the codec and create VideoWriter object
-                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                    out = cv2.VideoWriter(f'{instance_viz_dir}/thermal_viz.mp4', fourcc, 12, (frame_size[1], frame_size[0]), isColor=True)
+                    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+                    out = cv2.VideoWriter(f'{instance_viz_dir}/thermal_viz.avi', fourcc, 8, (frame_size[0], frame_size[1]), isColor=True)
                     for ts, data in thermal_data:
                         img = data.astype(np.float32)
+                        # remove any negative values and convert it into nan
+                        img[img < 0] = np.nan
+
+
+
+                        # fill any nan values with average of all neighbouring pixels
+                        img = cv2.inpaint(img, np.isnan(img).astype(np.uint8), 3,
+                                                      cv2.INPAINT_TELEA)
+                        # rotate image by 90 deg anti clockwise
+                        img = np.rot90(img, 1)
+
                         img = 255 * (img - img.min()) / (img.max() - img.min())
                         img_col = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_INFERNO)
                         out.write(img_col)
@@ -111,7 +130,15 @@ def process_chunk(chunk):
     """
     ts, encoded_data = chunk.split(" | ")
     ts = int(ts)
-    data = pickle.loads(base64.b64decode(encoded_data.encode()))
+    try:
+        data = pickle.loads(base64.b64decode(encoded_data.encode()))
+    except _pickle.UnpicklingError:
+        # print(f"Found unpickling error in chunk, {chunk}")
+        data = np.array([])
+        ts = -1
+    except binascii.Error:
+        data = np.array([])
+        ts = -1
     assert isinstance(data, (np.ndarray, np.generic))
 
     return (ts, data)

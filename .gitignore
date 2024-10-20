@@ -133,4 +133,6 @@ cache/
 *.raw
 **.avi
 /generate_av_labels/otc_models/model_ckpts/
+/generate_timestamped_av_labels/otc_models/model_ckpts/
 data_collection/cache
+/generate_timestamped_av_labels/src/

@@ -1,3 +1,6 @@
+import _pickle
+import binascii
+
 import pandas as pd
 import numpy as np
 import base64
@@ -23,11 +26,12 @@ def process_lidar2d_data(raw_data_dir, df_labels, write_dir, prefix="rplidar_2d"
     labels_data = []
     for _ in range(len(start_times)):
         labels_data.append(list())
-    lidar2d_files = sorted(glob.glob(f"{raw_data_dir}/{prefix}*.csv"))
+    lidar2d_files = sorted(glob.glob(f"{raw_data_dir}/{prefix}*.b64"))
 
     ts = 0
     prev_label = ""
     for lidar2d_file in lidar2d_files:
+        print(f"Processing Lidar2D file: {lidar2d_file}")
         remainder = ""
         with open(lidar2d_file, "r") as myFile:
             while True:
@@ -48,7 +52,11 @@ def process_lidar2d_data(raw_data_dir, df_labels, write_dir, prefix="rplidar_2d"
                 if chunk == "":
                     break
                 # lidar2d_data.append(process_chunk(chunk))
+                if len(chunk.split(" | "))<2:
+                    print(f"Not enough chunk size, {len(chunk)}, {lidar2d_file}, {chunk[:100]}")
+                    continue
                 ts, data = process_chunk(chunk)
+                if ts==-1: break
                 if np.any((start_times < ts) & (end_times > ts)):
                     label_match_idxs = np.where((start_times < ts) & (end_times > ts))[0]
                     for label_match_idx in label_match_idxs:
@@ -79,7 +87,7 @@ def visualize_lidar2d_data(processed_data_dir):
                 lidar2d_data = pickle.load(open(lidar2d_data_file, "rb"))
                 if len(lidar2d_data) > 0:
                     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-                    out = cv2.VideoWriter(f'{instance_viz_dir}/lidar2d_viz.avi', fourcc, 10, (400, 400), isColor=True)
+                    out = cv2.VideoWriter(f'{instance_viz_dir}/lidar2d_viz.avi', fourcc, 2, (400, 400), isColor=True)
                     for ts, data in lidar2d_data:
                         scan_x, scan_y = data
                         # print(scan_x[:10], scan_y[:10])
@@ -120,7 +128,14 @@ def process_chunk(chunk):
     """
     ts, encoded_data = chunk.split(" | ")
     ts = int(ts)
-    data = pickle.loads(base64.b64decode(encoded_data.encode()))
+    try:
+        data = pickle.loads(base64.b64decode(encoded_data.encode()))
+    except _pickle.UnpicklingError:
+        # print(f"Found unpickling error in chunk, {chunk}")
+        data = ([],[])
+        ts = -1
+    except binascii.Error:
+        data = ([],[])
+        ts = -1
     assert isinstance(data, tuple)
-
     return (ts, data)

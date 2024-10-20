@@ -183,7 +183,7 @@ if st.session_state['recording_in_progress']:
 
 if label_end:
     with recording_status.container():
-        st.warning(f"Recording stopped for f{current_activity}. please store label before proceeding")
+        st.warning(f"Recording stopped for {current_activity}. please store label before proceeding")
 
 if add_label:
     with recording_status.container():
@@ -225,15 +225,28 @@ for label in label_list:
         label_counts[label[2]][label[3].strip()]+=1
 
 col1, col2, col3 = st.columns(3)
-with col1:
-    for key, value in label_counts['livingroom'].items():
-        st.write(f"{key} : {int(value)}")
-with col2:
-    for key, value in label_counts['kitchen'].items():
-        st.write(f"{key} : {int(value)}")
-with col3:
-    for key, value in label_counts['bathroom'].items():
-        st.write(f"{key} : {int(value)}")
+kitchen_labels = label_counts['kitchen'].items()
+for idx, (key, value) in enumerate(kitchen_labels):
+    if idx%3==0:
+        with col1:
+            st.write(f"{key} : {int(value)}")
+    elif idx%3==1:
+        with col2:
+            st.write(f"{key} : {int(value)}")
+    elif idx%3==2:
+        with col3:
+            st.write(f"{key} : {int(value)}")
+#
+#
+# with col1:
+#     for key, value in label_counts['livingroom'].items():
+#         st.write(f"{key} : {int(value)}")
+# with col2:
+# for key, value in label_counts['kitchen'].items():
+#     st.write(f"{key} : {int(value)}")
+# with col3:
+#     for key, value in label_counts['bathroom'].items():
+#         st.write(f"{key} : {int(value)}")
 
 
 
