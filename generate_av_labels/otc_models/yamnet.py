@@ -3,20 +3,12 @@ Inference engine for yamnet model
 '''
 from __future__ import division, print_function
 
-import sys
 
 import numpy as np
 import resampy
-import soundfile as sf
-import tensorflow as tf
-import shutil
 import otc_models.model_configs.yamnet.params as yamnet_params
 import otc_models.model_configs.yamnet.yamnet as yamnet_model
-import glob
-import os
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from pathlib import Path
 
 def get_yamnet_model(device='cpu'):

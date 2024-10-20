@@ -1,17 +1,10 @@
 """
 This is main package file, which starts vax pipeline based on given configuration
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 import os.path
-from collections import Counter
-from itertools import combinations
-import numpy as np
 import pandas as pd
-import glob
-import pickle
 from copy import deepcopy
-from sklearn.cluster import OPTICS
-import warnings
 import sys
 
 from utils import get_logger
@@ -22,40 +15,38 @@ from get_raw_av_labels import get_raw_av_labels
 from featurize_training_data import featurize_training_data
 from cluster_training_data import cluster_training_data
 from combine_av_clustering import combine_av_clustering
-# from HAR.Phase2IntegratedNN.train_x_models import train_x_models
-# from HAR.Phase2IntegratedNN.predict_x_models import predict_x_models
 
 def run_vax_av_pipeline(config, logger):
     logger.info(f"----- End to End VAX pipeline run for user {config['user']} -----")
 
     # Create instances from continuous timestamp data
-    logger.info(f"Create instances from continuous timestamp data")
+    logger.info("Create instances from continuous timestamp data")
     vax_pipeline_object = get_instance_raw_av_data(config, logger)
 
     # Get OTC model output over raw A/V data
-    logger.info(f"Get OTC output from raw audio and pose data")
+    logger.info("Get OTC output from raw audio and pose data")
     otc_labels = get_otc_output(vax_pipeline_object, config, logger)
     vax_pipeline_object['otc_labels'] = otc_labels
 
     # Get A/V labels from training ensemble
-    logger.info(f"Get raw av labels from otc model data")
+    logger.info("Get raw av labels from otc model data")
     raw_av_labels = get_raw_av_labels(vax_pipeline_object, config, logger)
     vax_pipeline_object['raw_av_labels'] = raw_av_labels
 
 
     # Featurize training data from X sensors for given instances
-    logger.info(f"Featurize data from X sensors for given instances")
+    logger.info("Featurize data from X sensors for given instances")
     featurized_training_data, raw_sensor_data = featurize_training_data(vax_pipeline_object, config, logger)
     vax_pipeline_object['featurized_training_data'] = featurized_training_data
     vax_pipeline_object['raw_sensor_data'] = raw_sensor_data
 
     # Cluster featurized training data from X sensors
-    logger.info(f"Cluster featurized training data from X sensors")
+    logger.info("Cluster featurized training data from X sensors")
     sensor_predictions = cluster_training_data(vax_pipeline_object, config, logger)
     vax_pipeline_object['sensor_predictions'] = sensor_predictions
 
     # Update A/V labels from clustering input
-    logger.info(f"Combine clustering information with raw_av_labels to get final av labels")
+    logger.info("Combine clustering information with raw_av_labels to get final av labels")
     final_av_labels = combine_av_clustering(vax_pipeline_object, config, logger)
     vax_pipeline_object['final_av_labels'] = final_av_labels
     df_av_labels  = pd.DataFrame.from_dict(final_av_labels, orient='index').reset_index()
@@ -67,9 +58,9 @@ def run_vax_av_pipeline(config, logger):
 
 if __name__ == '__main__':
     # config for pipeline run
-    BASE_SRC_DIR = '/home/prasoon/vax/'
-    BASE_DATA_DIR = 'cache/temp_user/processed_data'
-    USER = 'temp_user'
+    BASE_SRC_DIR = '../'
+    USER = 'P11'
+    BASE_DATA_DIR = f'../../../mnt/vax/phase3/{USER}'
 
     run_config = {
         'user' : USER,
@@ -102,7 +93,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if not os.path.exists(run_config['av_ensemble_file']):
-        logger.info(f"A/V ensemble does not exist. Exiting...")
+        logger.info("A/V ensemble does not exist. Exiting...")
         sys.exit(1)
 
     # Create cache directory

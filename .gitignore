@@ -132,7 +132,13 @@ cache/
 **.DS_Store
 *.raw
 **.avi
+<<<<<<< HEAD
 /generate_av_labels/otc_models/model_ckpts/
 /generate_timestamped_av_labels/otc_models/model_ckpts/
 data_collection/cache
 /generate_timestamped_av_labels/src/
+=======
+/generate_av_labels/otc_models/model_ckpts/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth
+data_collection/cache
+/generate_av_labels/tmp_skl/
+>>>>>>> 875f740833e4806c9819b0b9c9bf643d7a80af36

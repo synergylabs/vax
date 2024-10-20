@@ -2,30 +2,15 @@
 Featurization for multiple functions
 """
 
-import glob
-import sys
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy
-from collections import Counter
-import os
-import pickle
-from copy import deepcopy
 
 # mmwave for noise reduction
 import mmwave.dsp as dsp
-import mmwave.clustering as clu
 
 # throwing sklearn to the problem
 from sklearn.metrics import *
-from sklearn.preprocessing import normalize
 from sklearn.ensemble import *
-import xgboost
-from sklearn.svm import SVC
 from sklearn.model_selection import *
-import skimage.measure
 from numpy.lib.stride_tricks import sliding_window_view
 
 

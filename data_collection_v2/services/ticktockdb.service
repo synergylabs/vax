@@ -1,0 +1,13 @@
+[Unit]
+Description=ticktock database Service
+After=multi-user.target
+
+[Service]
+Type=exec
+User=vax
+ExecStart=/home/vax/vax-rpi/sensing/database/ticktock.0.11.1/bin/tt -c /home/vax/vax-rpi/sensing/database/ticktock.0.11.1/conf/tt_vax.conf --tsdb.data.dir /home/vax/ticktockdb/data --log.file /home/vax/ticktockdb/logs/ticktock.log
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

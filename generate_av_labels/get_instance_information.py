@@ -1,54 +1,28 @@
 import glob
-import logging
-import sys
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy
-from collections import Counter
 import os
 import pickle
-from copy import deepcopy
 import shutil
 # mmwave for noise reduction
 # import mmwave.dsp as dsp
 # import mmwave.clustering as clu
-import itertools
 import soundfile as sf
 
 # throwing sklearn to the problem
 from sklearn.metrics import *
-from sklearn.preprocessing import normalize
 from sklearn.ensemble import *
-from sklearn.svm import SVC
 from sklearn.model_selection import *
 from sklearn.cluster import *
-from sklearn.mixture import GaussianMixture
 
 from datetime import datetime
 import moviepy.editor as mp
 
-from utils import time_diff
-import argparse
-import os
 import os.path as osp
-import shutil
-import time
-from datetime import datetime
-import glob
-import traceback
-import sys
-import pickle
 
-import cv2
 import mmcv
-import numpy as np
 import torch
 from otc_models.pose_extraction import init_pose_model, init_detector, frame_extraction, detection_inference, pose_inference
-from mmcv import DictAction
 
-from mmaction.apis import inference_recognizer, init_recognizer
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -68,17 +42,18 @@ except (ImportError, ModuleNotFoundError):
 
 MODEL_CHECKPOINT_DIR = 'otc_models/model_ckpts'
 MODEL_CONFIG_DIR = 'otc_models/model_configs'
-POSE_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/cache/pose_cache'
-AUDIO_CACHE_ROOT = '/Users/ppatida2/VAX/vax-public/cache/audio_cache'
+POSE_CACHE_ROOT = '../cache/pose_cache'
+AUDIO_CACHE_ROOT = '../cache/audio_cache'
 os.makedirs(POSE_CACHE_ROOT,exist_ok=True)
-os.makedirs(POSE_CACHE_ROOT,exist_ok=True)
+os.makedirs(AUDIO_CACHE_ROOT,exist_ok=True)
 
 pose_extraction_config = {
     'config':f'{MODEL_CONFIG_DIR}/skeleton/posec3d/slowonly_r50_u48_240e_ntu120_xsub_keypoint.py',
     'det_config': f'{MODEL_CONFIG_DIR}/faster_rcnn_r50_fpn_2x_coco.py',
     'det_checkpoint': f'{MODEL_CHECKPOINT_DIR}/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth',
     'pose_config': f'{MODEL_CONFIG_DIR}/hrnet_w32_coco_256x192.py',
-    'pose_checkpoint': f'{MODEL_CHECKPOINT_DIR}/hrnet_w32_coco_256x192-c78dce93_20200708.pth',
+    # 'pose_checkpoint': f'{MODEL_CHECKPOINT_DIR}/hrnet_w32_coco_256x192-c78dce93_20200708.pth',
+    'pose_checkpoint': f'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth',
     'det_score_thr': 0.9,
     'predict_stepsize': 5,
     'short_side': 480,
@@ -92,9 +67,9 @@ def get_instance_raw_av_data(config, logger):
     vax_pipeline_object['instances'] = dict()
 
     activity_dirs = glob.glob(f"{processed_data_dir}/*")
-    for activity_dir in activity_dirs[:2]:
+    for activity_dir in activity_dirs:
         instance_dirs = glob.glob(f"{activity_dir}/*")
-        for instance_dir in instance_dirs[:2]:
+        for instance_dir in instance_dirs:
             groundtruth_activity = activity_dir.split("/")[-1]
             instance_id = instance_dir.split("/")[-1]
             # check if a/v raw data exists

@@ -1,37 +1,19 @@
 """
 Wrapper for base classifier for VAX pipeline
 """
-import glob
-import sys
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy
-from collections import Counter
-import os
-import pickle
-from copy import deepcopy
-import shutil
 # mmwave for noise reduction
 # import mmwave.dsp as dsp
 # import mmwave.clustering as clu
-import itertools
 
 # throwing sklearn to the problem
 from sklearn.metrics import *
 from sklearn.preprocessing import *
 from sklearn.ensemble import *
 import xgboost
-from sklearn.svm import SVC
 from sklearn.semi_supervised import *
 from sklearn.model_selection import *
 from sklearn.cluster import *
-from cleanlab.classification import CleanLearning
-from cleanlab.filter import find_label_issues
-import skimage.measure
-from numpy.lib.stride_tricks import sliding_window_view
-from HAR.Phase2IntegratedNN.featurize import get_features
 
 
 def privacy_fit(X_train, y_train, X_test=None, return_model=False):

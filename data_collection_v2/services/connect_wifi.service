@@ -1,0 +1,14 @@
+[Unit]
+Description=stats_record Service
+After=multi-user.target
+
+[Service]
+Type=idle
+User=root
+ExecStart=/home/vax/venv-vax/bin/python /home/vax/vax-rpi/sensing/connect_wifi.py
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+

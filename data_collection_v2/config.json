@@ -1,0 +1,16 @@
+{
+  "name": "test_user_feb5",
+  "timezone": "America/New_York",
+
+  // Output directory to write raw data files for given experiment
+  "out_data_dir": "/home/vax/filedata/",
+  
+  "start_hour":6,
+  "end_hour":15,
+  "disk_limit":80,
+  
+  //allowed sensor list
+  "allowed_sensors" : ["rplidar"],
+  "featurizer" : "f1"
+  
+}

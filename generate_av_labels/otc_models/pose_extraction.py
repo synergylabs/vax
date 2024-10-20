@@ -1,22 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import argparse
 import os
 import os.path as osp
-import shutil
-import time
-from datetime import datetime
-import glob
-import traceback
-import sys
-import pickle
 
 import cv2
 import mmcv
 import numpy as np
-import torch
-from mmcv import DictAction
 
-from mmaction.apis import inference_recognizer, init_recognizer
 
 try:
     from mmdet.apis import inference_detector, init_detector

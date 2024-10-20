@@ -8,7 +8,7 @@ matplotlib
 pandas
 scikit-learn
 scipy
-opencv-python-headless==4.6.0.66
+opencv-python-headless
 requests
 python-nmap==0.7.1
 soundfile
@@ -24,7 +24,7 @@ cleanlab
 # xgboost
 scikit-image
 # hdbscan
-keras==2.10.0
+keras==2.13.1
 mmaction2==0.24.0
 soundfile==0.11.0
 # tensorflow==2.10.0

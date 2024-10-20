@@ -1,0 +1,37 @@
+{
+  "kitchen": [
+    "Blender",
+    "Chopping",
+    "Grating",
+    "Microwave",
+    "WashingDishes",
+    "DishwasherLoading",
+    "DishwasherRunning",
+    "Baking",
+    "CookingOnStove",
+    "FridgeOpen",
+    "FridgeClose"
+  ],
+  "livingroom": [
+    "Vacuum",
+    "Doorbell",
+    "Coughing",
+    "Eating",
+    "Drinking",
+    "WatchingTV",
+    "Sitting",
+    "Walking",
+    "Exercising",
+    "Knocking",
+    "Talking"
+  ],
+  "bathroom": [
+    "Shaver In Use",
+    "ToilerFlushing",
+    "HairDryer",
+    "HairBrush",
+    "Toothbrush",
+    "HandWash",
+    "Shower"
+  ]
+}

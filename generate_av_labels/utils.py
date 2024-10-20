@@ -10,7 +10,6 @@ import logging
 from logging.handlers import WatchedFileHandler
 import subprocess
 from collections import Counter
-import numpy as np
 import pandas as pd
 
 def time_diff(t_start, t_end):
@@ -75,9 +74,6 @@ def get_screen_size():
     return int(width), int(height)
 
 
-from collections import Counter
-import numpy as np
-import pandas as pd
 
 def merge_dicts(dicts):
     """

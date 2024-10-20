@@ -25,7 +25,6 @@ the class map. Skips an export if the corresponding directory already exists.
 
 import os
 import sys
-import tempfile
 import time
 
 import numpy as np
