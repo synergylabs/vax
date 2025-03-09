@@ -8,6 +8,7 @@ Created: 5th March, 2022
 import os
 import threading
 import cv2
+import time
 from datetime import datetime
 class DepthRecorderThread(threading.Thread):
     def __init__(self, depth_queue, logger, write_folder, Config, video_prefix='depth'):
@@ -20,6 +21,9 @@ class DepthRecorderThread(threading.Thread):
         if not os.path.exists(self.write_folder):
             os.makedirs(self.write_folder)
         self.max_frames_per_video = self.config.max_duration_per_video * self.config.depth_fps * 60
+        self.ckpt_file = '/tmp/oakdlite_depth.ckpt'
+        self.checkpoint = time.time()
+        self.num_ckpt_frames = 0
 
         #initialize output video config
         if Config.downscaleColor: #video downscaled to 720p
@@ -80,6 +84,8 @@ class DepthRecorderThread(threading.Thread):
 
     def run(self):
         #run till thread is running
+        with open(self.ckpt_file, 'w') as ckpt_f:
+            ckpt_f.write(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},0.0')
         while self.running:
             #run till this video exhausts
             while self.current_frame_number<self.max_frames_per_video:
@@ -94,7 +100,13 @@ class DepthRecorderThread(threading.Thread):
                                         (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (255, 255, 255))
                     self.video_out.write(frame)
                     self.current_frame_number +=1
-
+                    self.num_ckpt_frames += 1
+                    if time.time() - self.checkpoint > self.config.checkpoint_freq:
+                        with open(self.ckpt_file, 'w') as ckpt_f:
+                            ckpt_f.write(
+                                f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},{round(self.num_ckpt_frames / self.config.checkpoint_freq, 2)}')
+                        self.checkpoint = time.time()
+                        self.num_ckpt_frames = 0.
                     # for debugging purposes
                     # cv2.imshow(self.window_name, frame)
                     # if cv2.waitKey(1) == ord('q'):

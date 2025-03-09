@@ -4,8 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=idle
-User=vax
-ExecStart=/home/vax/venv-vax/bin/python /home/vax/vax-rpi/sensing/record_rplidar.py
+User=synergy
+ExecStart=/home/synergy/miniconda3/envs/vax/bin/python /home/synergy/vax/data_collection_v2/record_rplidar.py
 Restart=always
 RestartSec=60
 

@@ -1,8 +1,5 @@
 import time
 import subprocess
-import board
-import digitalio
-from adafruit_rgb_display import st7789  # pylint: disable=unused-import
 import base64
 import pickle
 import sys
@@ -10,12 +7,42 @@ import signal
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from matplotlib import cm
-from utils import get_logger, time_diff
+from rich.jupyter import display
+
+from utils import get_logger, time_diff, get_screen_size
 import traceback
 from pathlib import Path
 import os
 from database.DBO import DBO
+import cv2
 from datetime import datetime, timedelta
+import pyedid
+import docker
+
+
+def hdmi_display_connected():
+    # Path where EDID information is typically stored on Linux systems
+    edid_path = "/sys/class/drm/"
+
+    for card in os.listdir(edid_path):
+        card_path = os.path.join(edid_path, card)
+        if os.path.isdir(card_path):
+            edid_file = os.path.join(card_path, "edid")
+            if os.path.exists(edid_file):
+                try:
+                    with open(edid_file, "rb") as f:
+                        edid_data = f.read()
+
+                    edid = pyedid.parse_edid(edid_data)
+                    print(f"Display detected on {card}:")
+                    print(f"Manufacturer: {edid.manufacturer}")
+                    print(f"Model: {edid.name}")
+                    print(f"Serial Number: {edid.serial}")
+                    return True
+                except Exception as e:
+                    print(f"Error reading EDID from {card}: {str(e)}")
+    print("No HDMI display detected")
+    return False
 
 def kill_process(stats_process_name, logger):
     running_processes = subprocess.check_output(['ps', 'aux']).decode().split("\n")
@@ -43,70 +70,39 @@ def kill_process(stats_process_name, logger):
     logger.info(f"Successfully Terminated Stats Process...")
     return
 
+def init_cv2_display():
 
+    # check if there is any display connected to the device
+    while not hdmi_display_connected():
+        print("No HDMI display detected, waiting for display to be connected...")
+        time.sleep(5)
+    # ch
+    print("HDMI display detected, starting stats display...")
+    time.sleep(5)
+    display_window_name = "Data Collection Stats"
+    # Initialize the display
+    cv2.namedWindow(display_window_name, cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty(display_window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.moveWindow(display_window_name, 0, 0)
+    width, height = get_screen_size()
 
-def init_tft_display():
-    #initialize minitft display
-    # Configuration for CS and DC pins (these are PiTFT defaults):
-    
-    # cs_pin = digitalio.DigitalInOut(board.CE0) (REMOVED FOR RPI-5)
-    cs_pin=None
-    dc_pin = digitalio.DigitalInOut(board.D25)
-    reset_pin = digitalio.DigitalInOut(board.D24)
+    # get the top and bottom padding
+    top = int(0.05 * height)
+    bottom = int(0.05 * height)
+    padding = int(0.05 * width)
 
-    # Config for display baudrate (default max is 24mhz):
-    BAUDRATE = 24000000
-    # Setup SPI bus using hardware SPI:
-    spi = board.SPI()
-    disp = st7789.ST7789(spi, height=240, width=240, x_offset=0, y_offset=80, rotation=0,  # 1.3", 1.54" ST7789
-        cs=cs_pin,
-        dc=dc_pin,
-        rst=reset_pin,
-        baudrate=BAUDRATE,
-    )
+    return display_window_name, width, height, top, bottom, padding
 
-    if disp.rotation % 180 == 90:
-        height = disp.width  # we swap height/width to rotate it to landscape!
-        width = disp.height
-    else:
-        width = disp.width  # we swap height/width to rotate it to landscape!
-        height = disp.height
-
-    # fixed constants for stats display
-    padding = -2
-    top = padding
-    bottom = height - padding
-    # Move left to right keeping track of the current x position for drawing shapes.
-    x = 0
-    image = Image.new("RGB", (width, height))
-    # Get drawing object to draw on image.
-    draw = ImageDraw.Draw(image)
-    # Draw a black filled box to clear the image.
-    draw.rectangle((0, 0, width, height), outline=0, fill=(0, 0, 0))
-    y = top
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
-
-    draw.text((x, y), "Starting \n Data \n Collection...", font=font, fill="#FFFFFF")
-    disp.image(image, disp.rotation)
-    # Turn on the backlight
-    backlight = digitalio.DigitalInOut(board.D22)
-    backlight.switch_to_output()
-    backlight.value = True
-    return disp, width, height, top, bottom, padding
-
-def displayWrite(display_text, y_offset):
-    ...
-    
 if __name__=='__main__':
     
     logger = get_logger("stats_display",logdir = f'{Path(__file__).parent}/../../cache/logs',console_log=True)
-    disp,width,height,top, bottom, padding = init_tft_display()
+    disp_window_name,width,height,top, bottom, padding = init_cv2_display()
     x=0
 
     # get device mac address based experiment name    	
-    eth0_mac_cmd = "ifconfig eth0 | grep ether | awk 'END { print $2;}'"
+    eth0_mac_cmd = "ifconfig enp86s0 | grep ether | awk 'END { print $2;}'"
     mac_address = subprocess.check_output(eth0_mac_cmd,shell=True).decode('utf-8')
-    exp_name=f"rpi5_{mac_address.replace(':','')}".replace('\n','').replace('$','')
+    exp_name=f"vax_{mac_address.replace(':','')}".replace('\n','').replace('$','')
     logger.info(f"Expname: {exp_name}")
 
     # maintain time for zero frames
@@ -114,21 +110,26 @@ if __name__=='__main__':
     SYSTEM_CHECK_FREQ = 150
     CHECKPOINT_FREQ = 20
     sensors_config = {
-        'flir':{'file_ckpt':'/tmp/thermal.ckpt', 'tsdb_ckpt':'/tmp/thermal_tsdb.ckpt', 'low_fps':3.},
-        'rplidar':{'file_ckpt':'/tmp/rplidar.ckpt', 'tsdb_ckpt':'/tmp/rplidar_tsdb.ckpt','low_fps':1},
-        #'micarray':{'file_ckpt':'/tmp/micarray.ckpt', 'tsdb_ckpt':'/tmp/micarray_tsdb.ckpt', 'low_fps':25},
-        'yamnet':{'file_ckpt':'/tmp/yamnet.ckpt', 'tsdb_ckpt':'/tmp/yamnet_tsdb.ckpt', 'low_fps':5},
-        'tofimager':{'file_ckpt':'/tmp/tofimager.ckpt', 'tsdb_ckpt':'/tmp/tofimager_tsdb.ckpt', 'low_fps':5}
+        'flir':{'file_ckpt':'/tmp/thermal.ckpt', 'low_fps':3.,'sensor_process_name':'record_flir.py'},
+        'rplidar':{'file_ckpt':'/tmp/rplidar.ckpt', 'low_fps':1,'sensor_process_name':'record_rplidar.py'},
+        'micarray':{'file_ckpt':'/tmp/micarray.ckpt', 'low_fps':25,'sensor_process_name':'record_respeakerv2.py'},
+        'doppler':{'file_ckpt':'/tmp/doppler.ckpt','low_fps':5,'sensor_process_name':'record_doppler.py'},
+        'pose':{'file_ckpt':'/tmp/oakdlite_pose.ckpt','low_fps':3,'sensor_process_name':'record_oakdlite.py'},
+        'depth':{'file_ckpt':'/tmp/oakdlite_depth.ckpt','low_fps':10,'sensor_process_name':'record_oakdlite.py'},
+        'rgb':{'file_ckpt':'/tmp/oakdlite_rgb.ckpt','low_fps':5,'sensor_process_name':'record_oakdlite.py'},
     }
     sensor_live_status = {        
         'flir':{'time_since_ckpt':0.},
         'rplidar':{'time_since_ckpt':0.},
-        #'micarray':{'time_since_ckpt':0.},
-        'yamnet':{'time_since_ckpt':0.},
-        'tofimager':{'time_since_ckpt':0.}}
+        'micarray':{'time_since_ckpt':0.},
+        'doppler':{'time_since_ckpt':0.},
+        'pose':{'time_since_ckpt':0.},
+        'depth':{'time_since_ckpt':0.},
+        'rgb':{'time_since_ckpt':0.}
+    }
 
     while True:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 25)
         image = Image.new("RGB", (width, height))
         draw = ImageDraw.Draw(image)
         # Draw a black filled box to clear the image.
@@ -137,13 +138,13 @@ if __name__=='__main__':
         curr_time = datetime.now().strftime("Time: %m/%d %H:%M:%S")
         cmd = "hostname -I | cut -d' ' -f1"
         IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
-        # ~ cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-        # ~ CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-        # ~ cmd = "free -m | awk 'NR==2{printf \"Mem:%s/%sMB  %.0f%%\", $3,$2,$3*100/$2 }'"
-        # ~ MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
-        # ~ cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
-        # ~ Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-        
+        # cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+        # CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        # cmd = "free -m | awk 'NR==2{printf \"Mem:%s/%sMB  %.0f%%\", $3,$2,$3*100/$2 }'"
+        # MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        # cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
+        # Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
+        #
         # new compressed load stats
         cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
         CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
@@ -152,7 +153,7 @@ if __name__=='__main__':
         cmd = 'df -h | awk \'$NF=="/"{printf "%s", $5}\''
         Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
         device_load_stats = f"C|M|D:{CPU}|{MemUsage}|{Disk}"
-        
+        # logger.info(device_load_stats)
         seperator = '-------------'
         # Write four lines of text.
         y = top
@@ -178,6 +179,19 @@ if __name__=='__main__':
             wifi_stat_color = "#FF00FF"
             draw.text((x, y), wifi_stat_str, font=font, fill=wifi_stat_color)
             y += font.getbbox(wifi_stat_str)[3]
+            # logger.info(wifi_stat_str)
+            # Display image.
+            # convert image to cv2 format
+            image = np.array(image)
+            # convert RGB to BGR
+            image = image[:, :, ::-1].copy()
+            cv2.imshow(disp_window_name, image)
+            if cv2.waitKey(1) == 27:
+                logger.info(f"Closing {disp_window_name}")
+                break
+            if cv2.getWindowProperty(disp_window_name, cv2.WND_PROP_VISIBLE) < 1:
+                break
+            time.sleep(0.5)
             continue
             
         wifi_ckpt_arr = open(wifi_config_file).read().split("|")
@@ -197,7 +211,7 @@ if __name__=='__main__':
                 y += font.getbbox(tailscale_host)[3]
                 tailscale_ip = f'dev-ip:{tailscale_ckpt_arr[2]}'
                 draw.text((x, y), tailscale_ip, font=font, fill=tailscale_stat_color)
-                y += font.getbbox(tailscale_ip)[3]                
+                y += font.getbbox(tailscale_ip)[3]
             else:
                 tailscale_stat_str = f'{tailscale_ckpt_arr[0]}!!!'
                 tailscale_stat_color = "#FFFF00"
@@ -256,29 +270,42 @@ if __name__=='__main__':
                 sensor_color = "#FFFFFF"
             draw.text((x, y), sensor_stat_str, font=font, fill=sensor_color)
             y += font.getbbox(sensor_stat_str)[3]
+            # logger.info(sensor_stat_str)
         
         if time.time() > last_system_health_checkpoint + SYSTEM_CHECK_FREQ:
             # check if database is working, else kill db
-            database_dbo = DBO()
-            if not database_dbo.is_http_success(logger):
-                database_dbo.close()
-                logger.error("Database not responding, restarting db")
-                kill_process('/home/vax/vax-rpi/sensing/database/ticktock.0.11.1/bin/tt', logger)
-                # restart database
-                #_ = os.popen("sudo systemctl start ticktockdb.service")
-            
+            # database_dbo = DBO()
+            # if not database_dbo.is_http_success(logger):
+            #     database_dbo.close()
+            #     logger.error("Database not responding, restarting db")
+            #     kill_process('/opt/ticktock/bin/ticktock', logger)
+            #     # restart database
+            #     # _ = os.popen("sudo systemctl start ticktockdb.service")
+            logger.info(device_load_stats)
             for sensor in sensor_live_status:
                 if sensor_live_status[sensor]['time_since_ckpt'] > SYSTEM_CHECK_FREQ:
                     logger.info(f"No data collected from sensor {sensor}, restarting recording")
-                    kill_process(f'record_{sensor}.py', logger)
+                    process_name = sensors_config[sensor]['sensor_process_name']
+                    kill_process(process_name, logger)
                     # restart sensor
                     # _ = os.popen("sudo systemctl start record_%s.service" % (sensor))
                     sensor_live_status[sensor]['time_since_ckpt'] = 0.
+                else:
+                    logger.info(f"Data collected from sensor {sensor} in last {sensor_live_status[sensor]['time_since_ckpt']}s")
             last_system_health_checkpoint = time.time()
                 
             
         # Display image.
-        disp.image(image, disp.rotation)
+        # convert image to cv2 format
+        image = np.array(image)
+        #convert RGB to BGR
+        image = image[:, :, ::-1].copy()
+        cv2.imshow(disp_window_name, image)
+        if cv2.waitKey(1) == 27:
+            logger.info(f"Closing {disp_window_name}")
+            break
+        if cv2.getWindowProperty(disp_window_name, cv2.WND_PROP_VISIBLE) < 1:
+            break
         time.sleep(0.5)
 
 

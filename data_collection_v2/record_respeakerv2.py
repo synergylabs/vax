@@ -380,10 +380,6 @@ if __name__ == '__main__':
 
 	run_config = json.load(open(config_file, 'r'))
     
-    # change config name to be rpi eth0 mac address
-	eth0_mac_cmd = "ifconfig eth0 | grep ether | awk 'END { print $2;}'"
-	mac_address = subprocess.check_output(eth0_mac_cmd,shell=True).decode('utf-8')
-	run_config['name']=f"rpi{mac_address.replace(':','')}".replace('\n','').replace('$','')
 
 	# get experiment dir
 	experiment_dir = f"{run_config['out_data_dir']}/{run_config['name']}"

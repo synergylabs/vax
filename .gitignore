@@ -135,3 +135,4 @@ cache/
 /generate_av_labels/otc_models/model_ckpts/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth
 data_collection/cache
 /generate_av_labels/tmp_skl/
+data_collection_v2/oakdlite/models/*.blob

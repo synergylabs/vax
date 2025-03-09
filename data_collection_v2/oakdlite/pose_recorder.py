@@ -9,6 +9,7 @@ import os
 import threading
 import numpy as np
 import csv
+import time
 import base64
 import pickle
 from datetime import datetime
@@ -42,6 +43,12 @@ class PoseRecorderThread(threading.Thread):
         # self.csv_out = None
         self.current_frame_number = 0
         self.running=False
+
+        #checkpoint management
+        self.ckpt_file = '/tmp/oakdlite_pose.ckpt'
+        self.checkpoint = time.time()
+        self.num_ckpt_frames = 0
+
 
         # for debugging purposes
         # self.window_name = 'depthCam'
@@ -78,7 +85,8 @@ class PoseRecorderThread(threading.Thread):
 
 
     def run(self):
-
+        with open(self.ckpt_file, 'w') as ckpt_f:
+            ckpt_f.write(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},0.0')
         #run till thread is running
         while self.running:
             #run till this video exhausts
@@ -93,6 +101,13 @@ class PoseRecorderThread(threading.Thread):
                     # # print(f"{self.out_file} {self.csv_out} {frame}")
                     # self.csv_out.writerow([frame_time, np.array2string(frame, separator=', ', suppress_small=True)])
                     self.current_frame_number += 1
+                    self.num_ckpt_frames += 1
+                    if time.time() - self.checkpoint > self.config.checkpoint_freq:
+                        with open(self.ckpt_file, 'w') as ckpt_f:
+                            ckpt_f.write(
+                                f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},{round(self.num_ckpt_frames / self.config.checkpoint_freq, 2)}')
+                        self.checkpoint = time.time()
+                        self.num_ckpt_frames = 0.
                     self.out_file.flush()
                 else:
                     self.out_file.close()

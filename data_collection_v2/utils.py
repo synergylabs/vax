@@ -29,7 +29,7 @@ def get_logger(logname, logdir='cache/logs',console_log=True):
     # Initialize the logger
 
     logger_master = logging.getLogger(logname)
-    logger_master.setLevel(logging.DEBUG)
+    logger_master.setLevel(logging.INFO)
 
     if not os.path.exists(logdir):
         os.makedirs(logdir)

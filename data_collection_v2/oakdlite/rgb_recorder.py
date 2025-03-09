@@ -8,6 +8,7 @@ Created: 5th March, 2022
 import os
 import threading
 import cv2
+import time
 from datetime import datetime
 # Custom libraries
 
@@ -41,6 +42,11 @@ class RGBRecorderThread(threading.Thread):
         self.video_out = None
         self.current_frame_number = 0
         self.running = False
+
+        #checkpoint management
+        self.ckpt_file = '/tmp/oakdlite_rgb.ckpt'
+        self.checkpoint = time.time()
+        self.num_ckpt_frames = 0
 
         # for debugging purposes
         # self.window_name = 'rgbCam'
@@ -78,6 +84,8 @@ class RGBRecorderThread(threading.Thread):
 
     def run(self):
         # run till thread is running
+        with open(self.ckpt_file, 'w') as ckpt_f:
+            ckpt_f.write(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},0.0')
         while self.running:
             # run till this video exhausts
             while self.current_frame_number < self.max_frames_per_video:
@@ -92,7 +100,13 @@ class RGBRecorderThread(threading.Thread):
                                         (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (255, 255, 255))
                     self.video_out.write(frame)
                     self.current_frame_number += 1
-
+                    self.num_ckpt_frames += 1
+                    if time.time() - self.checkpoint > self.config.checkpoint_freq:
+                        with open(self.ckpt_file, 'w') as ckpt_f:
+                            ckpt_f.write(
+                                f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")},{round(self.num_ckpt_frames / self.config.checkpoint_freq, 2)}')
+                        self.checkpoint = time.time()
+                        self.num_ckpt_frames = 0.
                     # for debugging purposes
                     # cv2.imshow(self.window_name, frame)
                     # if cv2.waitKey(1) == ord('q'):

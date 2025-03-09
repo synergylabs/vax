@@ -24,4 +24,5 @@ scikit-image
 soundfile==0.11.0
 jstyleson
 sounddevice
-tflite_runtime
+pyedid
+docker

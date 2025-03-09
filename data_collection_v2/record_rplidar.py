@@ -83,7 +83,7 @@ class RPLidarReaderThread(threading.Thread):
         self.running = False
 
     def run(self):
-        lidar = RPLidar(self.port_address)
+        lidar = RPLidar(self.port_address,logger=self.logger)
         while (True):
             try:
                 lidar.start()
@@ -95,10 +95,10 @@ class RPLidarReaderThread(threading.Thread):
                 time.sleep(5)
             # lidar.stop()
             lidar.disconnect()
-            lidar = RPLidar(self.port_address)
+            lidar = RPLidar(self.port_address,logger=self.logger)
         lidar.disconnect()
         del lidar
-        lidar = RPLidar(self.port_address, timeout=2)
+        lidar = RPLidar(self.port_address, timeout=2,logger=self.logger)
         try:
             print('Recording measurements... Press Crl+C to stop.')
             for scan in lidar.iter_scans(scan_type='express', min_len=100, max_buf_meas=False):

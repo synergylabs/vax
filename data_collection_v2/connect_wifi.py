@@ -6,14 +6,15 @@ import traceback
 from pathlib import Path
 
 WIFI_ACCESSPOINT_SCRIPT_FILE = f'{Path(__file__).parent}/wifi_options/wifi-connect'
+
 ckpt_file = '/tmp/wifi.ckpt'
 tailscale_ckpt_file = '/tmp/tailscale.ckpt'
-tailscale_auth_token_file = '/home/vax/.ssh/tailscale_authkey'
+tailscale_auth_token_file = f'{Path.home()}/.ssh/tailscale_authkey'
 tailscale_device_remove_script = f'{Path(__file__).parent}/wifi_options/tailscale_remove_device.sh'
 tailscale_auth_token = open(tailscale_auth_token_file).read().strip()
-ACCESS_POINT_GATEWAY = '192.168.42.5'
+ACCESS_POINT_GATEWAY = '192.168.42.1'
 ACCESS_POINT_PORT = '80'
-ACCESS_POINT_SSID = 'VAX RPI-Connect'
+ACCESS_POINT_SSID = 'VAX-Connect'
 ACCESS_POINT_UI_DIR = f'{Path(__file__).parent}/wifi_options/ui'
 
 class bcolors:
@@ -39,13 +40,13 @@ def execute_cmd(msg, cmd, logger, show_command=True):
 	return stdout.decode(), stderr.decode()
 
 if __name__ == '__main__':
-	logger = get_logger("wifi_connect", logdir = f'{Path(__file__).parent}/../../cache/logs', console_log=False)
+	logger = get_logger("wifi_connect", logdir = f'{Path(__file__).parent}/../../cache/logs', console_log=True)
 	
 	# get device mac address based experiment name    	
-	eth0_mac_cmd = "ifconfig eth0 | grep ether | awk 'END { print $2;}'"
-	mac_address = subprocess.check_output(eth0_mac_cmd,shell=True).decode('utf-8')
-	tailscale_rpi_hostname=f"rpi{mac_address.replace(':','')}".replace('\n','').replace('$','')
-    
+	# eth0_mac_cmd = "ifconfig eth0 | grep ether | awk 'END { print $2;}'"
+	# mac_address = subprocess.check_output(eth0_mac_cmd,shell=True).decode('utf-8')
+	# tailscale_rpi_hostname=f"rpi{mac_address.replace(':','')}".replace('\n','').replace('$','')
+	tailscale_hostname = "vax-nuc"
 	# over the loop check if wifi access point exists, and is active, if not, initialize accesspoint script
 	while True:
 	#check current access point
@@ -58,7 +59,7 @@ if __name__ == '__main__':
 			logger.info(f"got access point {str(output)}:{network_name}")
 			# check if tailscale is up and running
 			try:
-				tailscale_host_cmd = f"tailscale ip {tailscale_rpi_hostname}" 
+				tailscale_host_cmd = f"tailscale ip {tailscale_hostname}"
 				# ~ host_output = subprocess.check_output(tailscale_host_cmd,shell=True).decode('utf-8') 
 				host_output,host_err = execute_cmd("Get host info", tailscale_host_cmd.split(" "),logger)
 				tailscale_ip_cmd = f"tailscale ip -4" 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
 					logger.info("Tailscale is not set up")
 					logger.info("Attempting to register tailscale device")
 					# make sure that the device is not pre-registered and then setting up again due to sd card switch.
-					output,err=execute_cmd(f"Deregister {tailscale_rpi_hostname}, if exists", [tailscale_device_remove_script, tailscale_rpi_hostname], logger)
+					output,err=execute_cmd(f"Deregister {tailscale_hostname}, if exists", [tailscale_device_remove_script, tailscale_hostname], logger)
 					logger.info(f"Output: {output}")
 					logger.info(f"Error: {err}")
 					output,err=execute_cmd("Turning down tailscale service", ["systemctl","stop","tailscaled.service"], logger)
@@ -87,13 +88,13 @@ if __name__ == '__main__':
 					if not err=='':
 						continue
 					# register tailscale device
-					output,err = execute_cmd("Register new tailscale device", ["tailscale","up","--hostname",tailscale_rpi_hostname, "--authkey",tailscale_auth_token], logger, show_command=True)
+					output,err = execute_cmd("Register new tailscale device", ["tailscale","up","--hostname",tailscale_hostname, "--authkey",tailscale_auth_token], logger, show_command=True)
 					logger.info(f"Output: {output}")
 					logger.info(f"Error: {err}")
 				else:
 					logger.info("Tailscale is set up correctly.")
 					with open(tailscale_ckpt_file,'w') as ckpt_f:
-						ckpt_f.write(f'connected|{tailscale_rpi_hostname}|{ip_output.strip()}')				
+						ckpt_f.write(f'connected|{tailscale_hostname}|{ip_output.strip()}')
 			except:
 				logger.info(f"\n\nTailscale setup error: {traceback.format_exc()}")
 				with open(tailscale_ckpt_file,'w') as ckpt_f:

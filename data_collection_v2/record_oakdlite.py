@@ -17,6 +17,7 @@ import os
 import jstyleson as json
 import sys
 import signal
+from pathlib import Path
 import psutil
 
 # Custom libraries
@@ -28,7 +29,7 @@ from oakdlite.pose_recorder import PoseRecorderThread
 from oakdlite.poseestimators import get_poseestimator
 from oakdlite.run import pose_model_config,create_vpu_pipeline,create_keypoint_frame
 
-CHECKPOINT_FREQ = 60
+CHECKPOINT_FREQ = 20
 
 def sigterm_handler(_signo, _stack_frame):
     # Raises SystemExit(0):
@@ -60,13 +61,16 @@ class Config:
     #video codec
     video_codec = 'XVID' # for OSX use 'MJPG', for linux 'XVID'
 
+    #checkpoint freq
+    checkpoint_freq = CHECKPOINT_FREQ
+
 
 if __name__ == '__main__':
 
     # initialize logger
-    logger = get_logger('oakdlite_runner', 'cache/logs/video/oakdlite')
+    logger = get_logger("oakdlite", logdir=f'{Path(__file__).parent}/../../cache/logs', console_log=True)
     logger.info("------------ New Oakdlite Run ------------")
-    default_config_file = 'config.json'
+    default_config_file = f'{Path(__file__).parent}/config.json'
     visualize=False
     try:
         config_file = sys.argv[1]
@@ -228,5 +232,6 @@ if __name__ == '__main__':
         logger.info("Depth thread joined")
         rgb_recorder_thread.join()
         logger.info("RGB thread joined")
-        cv2.destroyAllWindows()
+        if visualize:
+            cv2.destroyAllWindows()
         logger.info(f"Oakdlite Sensor closed successfully")

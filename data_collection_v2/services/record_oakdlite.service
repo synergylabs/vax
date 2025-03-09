@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=idle
 User=synergy
-ExecStart=/home/synergy/miniconda3/envs/vax/bin/python /home/synergy/vax/data_collection_v2/record_yamnet.py
+ExecStart=/home/synergy/miniconda3/envs/vax/bin/python /home/synergy/vax/data_collection_v2/record_oakdlite.py
 Restart=always
 RestartSec=60
 

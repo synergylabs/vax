@@ -1,13 +1,14 @@
 [Unit]
 Description=ticktock database Service
-After=multi-user.target
+Requires=docker.service
+After=docker.service
 
 [Service]
-Type=exec
-User=vax
-ExecStart=/home/vax/vax-rpi/sensing/database/ticktock.0.11.1/bin/tt -c /home/vax/vax-rpi/sensing/database/ticktock.0.11.1/conf/tt_vax.conf --tsdb.data.dir /home/vax/ticktockdb/data --log.file /home/vax/ticktockdb/logs/ticktock.log
+Type=idle
+User=root
 Restart=always
-RestartSec=10
+ExecStart=/home/synergy/vax/data_collection_v2/ticktock_db.sh
+RestartSec=60
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
